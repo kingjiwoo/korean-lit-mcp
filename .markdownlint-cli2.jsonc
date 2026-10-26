@@ -1,0 +1,5 @@
+{
+  "globs": ["**/*.md", ".agents/**/*.md", ".github/**/*.md"],
+  "ignores": ["node_modules/**", ".venv/**", "data/works/**", ".local/**"],
+  "config": {"MD013": false, "MD060": false}
+}
