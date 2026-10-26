@@ -2,6 +2,7 @@
 
 import hashlib
 import re
+import unicodedata
 from dataclasses import dataclass
 from itertools import pairwise
 from pathlib import Path
@@ -49,6 +50,10 @@ class Edition:
     manifest: Manifest
     text: str
     paragraphs: tuple[Paragraph, ...]
+
+
+def search_key(value: str) -> str:
+    return re.sub(r"[\s·ㆍ]", "", unicodedata.normalize("NFC", value).casefold())
 
 
 def split_paragraphs(text: str, *, source_lines: bool = False) -> tuple[Paragraph, ...]:
@@ -131,7 +136,8 @@ def select_edition(
         if (
             edition.manifest.work_id == work_id
             if work_id is not None
-            else edition.manifest.title == title and edition.manifest.author == author
+            else search_key(edition.manifest.title) == search_key(title or "")
+            and search_key(edition.manifest.author) == search_key(author or "")
         )
         and (edition_id is None or edition.manifest.edition_id == edition_id)
     ]
