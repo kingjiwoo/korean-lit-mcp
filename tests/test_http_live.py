@@ -12,7 +12,7 @@ pytestmark = pytest.mark.skipif(not URL or not TOKEN, reason="Set TEST_MCP_URL a
 async def test_live_http_workflow() -> None:
     assert URL and TOKEN
     async with httpx.AsyncClient() as http:
-        assert (await http.get(URL.replace("/mcp", "/health"))).status_code == 200
+        assert (await http.get(URL.rstrip("/").removesuffix("/mcp") + "/health")).status_code == 200
         assert (await http.post(URL)).status_code == 401
         legacy = await http.post(
             URL,

@@ -64,6 +64,21 @@ def test_bad_configuration_fails_closed() -> None:
         app("short")
 
 
+def test_token_rotation_revokes_previous_token() -> None:
+    rotated = TOKEN + "-rotated"
+    with TestClient(app(rotated)) as client:
+        assert client.post("/mcp", headers={"Authorization": "Bearer " + TOKEN}).status_code == 401
+        response = client.post(
+            "/mcp",
+            headers={
+                "Authorization": "Bearer " + rotated,
+                "Accept": "application/json, text/event-stream",
+            },
+            json={"jsonrpc": "2.0", "id": 1, "method": "tools/list", "params": {}},
+        )
+        assert response.status_code == 200
+
+
 def test_untrusted_origin_and_host_are_rejected() -> None:
     with TestClient(app()) as client:
         headers = {
