@@ -1,15 +1,17 @@
 from fastmcp import FastMCP
 
-from korean_lit_mcp.contracts import Envelope, PassageRequest, SearchRequest
+from korean_lit_mcp.contracts import Envelope, PassageRequest, SearchRequest, VerifyRequest
 from korean_lit_mcp.passages import get_passage, search_works
 from korean_lit_mcp.sources import Edition
+from korean_lit_mcp.verification import QuoteResult, verify_quote
 
 
 def create_server(*, editions: tuple[Edition, ...] = ()) -> FastMCP:
     server = FastMCP(
         "korean-lit-mcp",
         instructions=(
-            "인용 전 get_passage로 판본과 원문을 확보하세요. "
+            "인용 전 get_passage로 판본과 원문을 확보하고 작성 후 verify_quote로 검증하세요. "
+            "조회한 판본과 source_hash를 검증 요청에 전달하세요. "
             "미검증 범위를 검증 완료라고 표시하지 마세요. "
             "출처와 판본을 결과물에 표시하세요."
         ),
@@ -31,5 +33,14 @@ def create_server(*, editions: tuple[Edition, ...] = ()) -> FastMCP:
         원문을 변형 없이 반환합니다. 문단·행 주소는 1부터 시작하고 끝을 포함합니다.
         """
         return get_passage(request, editions)
+
+    @server.tool(name="verify_quote", annotations={"readOnlyHint": True})
+    def verify(request: VerifyRequest) -> Envelope[QuoteResult]:
+        """문제·자료 작성 후 인용을 원문과 대조할 때 사용합니다.
+
+        조회한 작품·판본·해시 또는 교사가 제공한 source_text를 사용합니다.
+        표기 차이와 교정 후보를 자동 통과시키지 말고 확인·재검증하세요.
+        """
+        return verify_quote(request, editions)
 
     return server
