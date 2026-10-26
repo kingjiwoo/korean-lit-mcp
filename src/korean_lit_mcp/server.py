@@ -1,12 +1,21 @@
 from fastmcp import FastMCP
 
-from korean_lit_mcp.contracts import Envelope, PassageRequest, SearchRequest, VerifyRequest
+from korean_lit_mcp.catalogue import SOURCE, NationalLibrary
+from korean_lit_mcp.contracts import (
+    Envelope,
+    ErrorInfo,
+    PassageRequest,
+    SearchRequest,
+    Source,
+    VerifyRequest,
+)
 from korean_lit_mcp.passages import get_passage, search_works
-from korean_lit_mcp.sources import Edition
+from korean_lit_mcp.sources import Edition, SourceError
 from korean_lit_mcp.verification import VerificationResult, verify_quote
 
 
-def create_server(*, editions: tuple[Edition, ...] = ()) -> FastMCP:
+def create_server(*, editions: tuple[Edition, ...] = (), nl_api_key: str | None = None) -> FastMCP:
+    catalogue = NationalLibrary(nl_api_key) if nl_api_key else None
     server = FastMCP(
         "korean-lit-mcp",
         instructions=(
@@ -19,12 +28,29 @@ def create_server(*, editions: tuple[Edition, ...] = ()) -> FastMCP:
     )
 
     @server.tool(name="search_works", annotations={"readOnlyHint": True})
-    def search(request: SearchRequest) -> Envelope[dict[str, object]]:
+    async def search(request: SearchRequest) -> Envelope[dict[str, object]]:
         """작품 제목·작가로 검수된 원문을 찾을 때 사용합니다.
 
         판본별 ID와 본문 제공 여부를 반환합니다.
         """
-        return search_works(request, editions)
+        local = search_works(request, editions)
+        if catalogue is None or len(local.items) >= request.limit:
+            return local
+        try:
+            remote = await catalogue.search(request)
+        except SourceError as error:
+            if local.items:
+                local.note += " 기관 서지 검색 실패: " + str(error)
+                return local
+            return Envelope(
+                source=SOURCE, error=ErrorInfo(code=error.code, message=str(error)), note=str(error)
+            )
+        local.items.extend(remote.items[: request.limit - len(local.items)])
+        local.source = Source(name="검수 원문 목록·국립중앙도서관")
+        local.copyright = "unknown" if remote.items else local.copyright
+        local.retrieved_at = min(local.retrieved_at, remote.retrieved_at)
+        local.note += " " + remote.note
+        return local
 
     @server.tool(name="get_passage", annotations={"readOnlyHint": True})
     def passage(request: PassageRequest) -> Envelope[dict[str, object]]:

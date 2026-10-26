@@ -28,6 +28,7 @@ def search_works(
                 "year": m.year,
                 "edition": m.edition,
                 "source": m.source.model_dump(mode="json"),
+                "retrieved_at": m.reviewed_at.isoformat(),
                 "copyright": m.copyright,
                 "rights_url": str(m.rights_url),
                 "available_text": m.copyright == "public_domain",
