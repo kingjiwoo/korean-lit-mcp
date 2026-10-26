@@ -16,7 +16,7 @@ PR 00~08은 Codex가 책임지고 Claude Code의 실제 응답 모델 `claude-op
 | PR 05 | `feature/draft-verification` | [#6](https://github.com/kingjiwoo/korean-lit-mcp/pull/6) | 명시된 인용 표시 추출·검사 범위 검증 |
 | PR 06 | `feature/upstream-cache` | [#7](https://github.com/kingjiwoo/korean-lit-mcp/pull/7) | 캐시·모의 API 검증, 실제 인증 검색 대기 |
 | PR 07 | `feature/remote-operation` | [#8](https://github.com/kingjiwoo/korean-lit-mcp/pull/8) | 인증·HTTP 제한·비루트 컨테이너 검증 |
-| PR 08 | `chore/pilot-deployment` | [#9](https://github.com/kingjiwoo/korean-lit-mcp/pull/9) | 컨테이너 CI·안내 구현, 원격 배포·교사 실증 대기 |
+| PR 08 | `chore/pilot-deployment` | [#9](https://github.com/kingjiwoo/korean-lit-mcp/pull/9) | Python·Markdown·컨테이너 CI 통과, 원격 배포·교사 실증 대기 |
 
 Draft PR은 실제 외부 검증이나 사람의 검토를 통과했다는 뜻이 아니다. 순서대로 부모 PR을 통합한 뒤 자식 PR을 `develop` 대상으로 바꾼다. squash 통합 후에는 최신 `develop`을 자식 작업 브랜치에 정상 병합하고 다시 검사해 중복 diff를 정리한다.
 
@@ -28,6 +28,7 @@ Draft PR은 실제 외부 검증이나 사람의 검토를 통과했다는 뜻�
 - 공유마당의 「동백꽃」·「봄·봄」 제공 파일과 권리 표시를 직접 확인했다. 원문 파일은 편집하지 않았으며 제공 TXT의 물리 행을 주소로 사용한다.
 - 공통 검사 스킬의 두 진입점이 같은 파일을 읽는지와 형식을 확인했다. Codex app-server의 `skills/list`에서 repo 범위·enabled 상태를, Claude Code의 실제 `/check-project` 로딩에서 경로와 검사 명령을 확인했다.
 - PR #1~#8의 GitHub Python·Markdown CI가 모두 통과했다.
+- PR #9의 GitHub Python·Markdown·컨테이너 CI도 통과했다. 컨테이너 준비 중 연결 재설정을 재시도하도록 수정하고 실제 CI에서 확인했다.
 
 ## 외부 입력이 필요한 작업
 
