@@ -5,9 +5,10 @@ from bisect import bisect_left, bisect_right
 from difflib import SequenceMatcher
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ValidationError
 
 from korean_lit_mcp.contracts import Envelope, ErrorInfo, Source, VerifyRequest
+from korean_lit_mcp.drafts import ExtractedQuote, extract_quotes
 from korean_lit_mcp.sources import Edition, Paragraph, SourceError, select_edition, split_paragraphs
 
 QUOTE_MARKS = str.maketrans({"“": '"', "”": '"', "‘": "'", "’": "'"})
@@ -28,6 +29,15 @@ class QuoteResult(BaseModel):
     suggestion: str | None = None
     differences: list[dict[str, object]] = Field(default_factory=list)
     note: str = ""
+    draft_start: int | None = None
+    draft_end: int | None = None
+
+
+class VerificationResult(Envelope[QuoteResult]):
+    coverage: Literal["submitted_quotes", "supported_draft_regions"] = "submitted_quotes"
+    checked_count: int = 0
+    all_submitted_exact: bool = False
+    unverified_regions: list[str] = Field(default_factory=list)
 
 
 def normalize(text: str) -> tuple[str, list[tuple[int, int]]]:
@@ -140,9 +150,7 @@ def check_quote(
     )
 
 
-def verify_quote(
-    request: VerifyRequest, editions: tuple[Edition, ...] = ()
-) -> Envelope[QuoteResult]:
+def verify_quote(request: VerifyRequest, editions: tuple[Edition, ...] = ()) -> VerificationResult:
     source = Source(name="교사 제공 텍스트")
     rights: Literal["public_domain", "protected", "unknown"] = "unknown"
     text = request.source_text
@@ -158,7 +166,7 @@ def verify_quote(
                     "source_changed", "원문 해시가 다릅니다. get_passage로 다시 조회하세요."
                 )
         except SourceError as error:
-            return Envelope(
+            return VerificationResult(
                 source=source,
                 copyright=rights,
                 error=ErrorInfo(code=error.code, message=str(error)),
@@ -168,25 +176,49 @@ def verify_quote(
         paragraphs = edition.paragraphs
     else:
         paragraphs = split_paragraphs(text)
-    if request.quotes is None:
-        return Envelope(
-            source=source,
-            copyright=rights,
-            error=ErrorInfo(
-                code="draft_not_supported", message="현재 quotes[]로 인용을 전달하세요."
-            ),
-            note="초안 추출은 별도 단계에서 추가합니다.",
-        )
+    extracted: list[ExtractedQuote] = []
+    warnings: list[str] = []
+    coverage: Literal["submitted_quotes", "supported_draft_regions"] = "submitted_quotes"
+    if request.draft is not None:
+        coverage = "supported_draft_regions"
+        extracted, warnings = extract_quotes(request.draft)
+        try:
+            request = VerifyRequest.model_validate(
+                {
+                    **request.model_dump(exclude={"draft", "quotes"}),
+                    "quotes": [q.text for q in extracted],
+                }
+            )
+        except ValidationError:
+            message = "검사 가능한 인용이 없거나, 인용 20개·각 2000자 상한을 넘습니다."
+            return VerificationResult(
+                source=source,
+                copyright=rights,
+                coverage=coverage,
+                unverified_regions=warnings,
+                error=ErrorInfo(code="unverified_draft", message=message),
+                note=message,
+            )
+    assert request.quotes is not None
     normalized, positions = normalize(text)
     results = [check_quote(q, text, paragraphs, normalized, positions) for q in request.quotes]
+    for result, quoted in zip(results, extracted, strict=False):
+        result.draft_start, result.draft_end = quoted.start, quoted.end
     verified = all(r.status == "exact" and not r.requires_review for r in results)
-    return Envelope(
+    return VerificationResult(
         items=results,
         source=source,
         copyright=rights,
+        coverage=coverage,
+        checked_count=len(results),
+        all_submitted_exact=verified,
+        unverified_regions=warnings,
         note=(
             "제출한 모든 인용이 원문과 문자 그대로 일치합니다. 초안 전체를 검사한 것은 아닙니다."
             if verified
             else "검토가 필요한 인용이 있습니다. 차이·후보·미확인 결과를 확인하세요."
+        )
+        + (
+            " 초안에서 지원한 표시 영역만 검사했습니다. 나머지는 미검증입니다." if extracted else ""
         ),
     )

@@ -3,7 +3,7 @@ from fastmcp import FastMCP
 from korean_lit_mcp.contracts import Envelope, PassageRequest, SearchRequest, VerifyRequest
 from korean_lit_mcp.passages import get_passage, search_works
 from korean_lit_mcp.sources import Edition
-from korean_lit_mcp.verification import QuoteResult, verify_quote
+from korean_lit_mcp.verification import VerificationResult, verify_quote
 
 
 def create_server(*, editions: tuple[Edition, ...] = ()) -> FastMCP:
@@ -35,7 +35,7 @@ def create_server(*, editions: tuple[Edition, ...] = ()) -> FastMCP:
         return get_passage(request, editions)
 
     @server.tool(name="verify_quote", annotations={"readOnlyHint": True})
-    def verify(request: VerifyRequest) -> Envelope[QuoteResult]:
+    def verify(request: VerifyRequest) -> VerificationResult:
         """문제·자료 작성 후 인용을 원문과 대조할 때 사용합니다.
 
         조회한 작품·판본·해시 또는 교사가 제공한 source_text를 사용합니다.
