@@ -1,0 +1,17 @@
+{
+  "work_id": "gongu-9000404",
+  "edition_id": "gongu-txt-20201218",
+  "title": "봄·봄",
+  "author": "김유정",
+  "year": 1935,
+  "edition": "공유마당 제공 김유정-봄·봄-조광.txt (2020-12-18 등록 파일)",
+  "source": {"name": "한국저작권위원회 공유마당", "url": "https://gongu.copyright.or.kr/gongu/wrt/wrt/view.do?wrtSn=9000404&menuNo=200019"},
+  "copyright": "public_domain",
+  "rights_url": "https://gongu.copyright.or.kr/gongu/wrt/wrt/view.do?wrtSn=9000404&menuNo=200019",
+  "rights_note": "해당 작품 상세 페이지의 이용조건: 자유이용 만료. 작가 생몰년으로 계산하지 않음.",
+  "reviewed_at": "2026-10-26T00:00:00Z",
+  "filename": "bombom.txt",
+  "sha256": "2673ace709783df3f5817b17d0aabba2031c7030bd468fa758f41f3c52424335",
+  "segmentation": "source_lines",
+  "note": "제공 TXT를 변형 없이 반환합니다. ¶번호는 TXT 물리 행 주소이며 교과서 문단과 다를 수 있습니다. 파일 내부 줄바꿈·표기를 유지합니다."
+}

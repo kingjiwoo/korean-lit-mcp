@@ -1,0 +1,17 @@
+{
+  "work_id": "gongu-9000397",
+  "edition_id": "gongu-txt-20201218",
+  "title": "동백꽃",
+  "author": "김유정",
+  "year": 1936,
+  "edition": "공유마당 제공 김유정-동백꽃-조광.txt (2020-12-18 등록 파일)",
+  "source": {"name": "한국저작권위원회 공유마당", "url": "https://gongu.copyright.or.kr/gongu/wrt/wrt/view.do?wrtSn=9000397&menuNo=200019"},
+  "copyright": "public_domain",
+  "rights_url": "https://gongu.copyright.or.kr/gongu/wrt/wrt/view.do?wrtSn=9000397&menuNo=200019",
+  "rights_note": "해당 작품 상세 페이지의 이용조건: 자유이용 만료. 작가 생몰년으로 계산하지 않음.",
+  "reviewed_at": "2026-10-26T00:00:00Z",
+  "filename": "dongbaek.txt",
+  "sha256": "8fcd962cb8e8bd9d6147ac078264afe89416f9abcfee15246c85e472a501a99e",
+  "segmentation": "source_lines",
+  "note": "제공 TXT를 변형 없이 반환합니다. ¶번호는 TXT 물리 행 주소이며 교과서 문단과 다를 수 있습니다. 파일 내부 줄바꿈·표기를 유지합니다."
+}
