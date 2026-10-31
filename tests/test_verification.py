@@ -67,12 +67,16 @@ def test_partial_hangul_syllable_is_not_orthography() -> None:
     assert check("각", "가").status == "not_found"
 
 
-def test_hash_change_and_edition() -> None:
+@pytest.mark.parametrize(
+    "payload,coverage",
+    [({"quotes": ["인용"]}, "submitted_quotes"), ({"draft": "“인용”"}, "supported_draft_regions")],
+)
+def test_hash_change_and_edition(payload: dict[str, object], coverage: str) -> None:
     editions = load_editions(Path("data/works"))
     manifest = editions[0].manifest
     result = verify_quote(
         VerifyRequest(
-            quotes=["인용"],
+            **payload,
             work_id=manifest.work_id,
             edition_id=manifest.edition_id,
             source_hash="0" * 64,
@@ -81,6 +85,7 @@ def test_hash_change_and_edition() -> None:
     )
     assert result.error is not None and result.error.code == "source_changed"
     assert result.source == manifest.source
+    assert result.coverage == coverage
 
 
 async def test_verify_tool_and_no_source_logs(caplog) -> None:

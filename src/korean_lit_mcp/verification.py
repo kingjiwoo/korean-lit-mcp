@@ -151,6 +151,9 @@ def check_quote(
 
 
 def verify_quote(request: VerifyRequest, editions: tuple[Edition, ...] = ()) -> VerificationResult:
+    coverage: Literal["submitted_quotes", "supported_draft_regions"] = (
+        "supported_draft_regions" if request.draft is not None else "submitted_quotes"
+    )
     source = Source(name="교사 제공 텍스트")
     rights: Literal["public_domain", "protected", "unknown"] = "unknown"
     text = request.source_text
@@ -169,6 +172,7 @@ def verify_quote(request: VerifyRequest, editions: tuple[Edition, ...] = ()) -> 
             return VerificationResult(
                 source=source,
                 copyright=rights,
+                coverage=coverage,
                 error=ErrorInfo(code=error.code, message=str(error)),
                 note=str(error),
             )
@@ -178,9 +182,7 @@ def verify_quote(request: VerifyRequest, editions: tuple[Edition, ...] = ()) -> 
         paragraphs = split_paragraphs(text)
     extracted: list[ExtractedQuote] = []
     warnings: list[str] = []
-    coverage: Literal["submitted_quotes", "supported_draft_regions"] = "submitted_quotes"
     if request.draft is not None:
-        coverage = "supported_draft_regions"
         extracted, warnings = extract_quotes(request.draft)
         try:
             request = VerifyRequest.model_validate(

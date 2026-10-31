@@ -1,3 +1,5 @@
+import logging
+
 import httpx
 import pytest
 
@@ -57,6 +59,13 @@ def test_stdlib_xml_accepts_utf8_prolog() -> None:
     assert records[0]["control_no"] == "test-id"
 
 
+def test_unknown_error_content_is_not_reflected_to_teacher() -> None:
+    with pytest.raises(SourceError) as error:
+        parse_response(b"<error><error_code>private-key-marker</error_code></error>")
+    assert "private-key-marker" not in str(error.value)
+    assert error.value.code == "upstream_invalid"
+
+
 async def test_errors_do_not_poison_cache() -> None:
     calls = 0
 
@@ -92,3 +101,19 @@ async def test_empty_results_expire_in_sixty_seconds() -> None:
     now[0] = 60
     await catalogue.search(request)
     assert calls == 2
+
+
+async def test_upstream_error_metrics_exclude_credentials(caplog) -> None:
+    caplog.set_level(logging.INFO, logger="korean_lit_mcp.catalogue")
+    catalogue = NationalLibrary(
+        "fixture-key",
+        transport=httpx.MockTransport(
+            lambda request: httpx.Response(
+                200, content=b"<error><error_code>011</error_code></error>"
+            )
+        ),
+    )
+    with pytest.raises(SourceError):
+        await catalogue.search(SearchRequest(query="Synthetic"))
+    assert "code=upstream_auth" in caplog.text
+    assert "fixture-key" not in caplog.text

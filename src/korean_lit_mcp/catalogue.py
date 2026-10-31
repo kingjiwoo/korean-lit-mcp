@@ -27,6 +27,8 @@ def parse_response(raw: bytes) -> tuple[list[dict[str, str]], int]:
         root = ET.fromstring(text)
         error_code = root.findtext(".//error_code")
         if error_code:
+            if re.fullmatch(r"[0-9]{3}", error_code) is None:
+                raise ValueError("Invalid error code")
             code = "upstream_auth" if error_code in {"010", "011"} else "upstream_error"
             if error_code == "012":
                 code = "upstream_limit"
@@ -93,6 +95,7 @@ class NationalLibrary:
                                     "upstream_invalid", "기관 API 응답이 크기 제한을 넘습니다."
                                 )
                 records, total = parse_response(bytes(body))
+                logging.getLogger(__name__).info("upstream source=nl outcome=ok")
                 return json.dumps(
                     {
                         "records": records,
@@ -101,7 +104,15 @@ class NationalLibrary:
                     },
                     ensure_ascii=False,
                 ).encode("utf-8")
+            except SourceError as error:
+                logging.getLogger(__name__).info(
+                    "upstream source=nl outcome=error code=%s", error.code
+                )
+                raise
             except httpx.HTTPError as error:
+                logging.getLogger(__name__).info(
+                    "upstream source=nl outcome=error code=upstream_unavailable"
+                )
                 raise SourceError(
                     "upstream_unavailable", "국립중앙도서관 API에 연결하지 못했습니다."
                 ) from error
