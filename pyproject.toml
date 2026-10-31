@@ -9,7 +9,9 @@ description = "Source-backed Korean literature passages and quotation verificati
 readme = "README.md"
 requires-python = ">=3.13"
 license = "MIT"
-dependencies = ["fastmcp>=2.13", "httpx>=0.28", "pydantic>=2.11"]
+dependencies = [
+  "fastmcp>=4.1.4", "httpx>=0.28", "pydantic>=2.11", "starlette>=1.10", "uvicorn>=0.54", "mcp>=2.3"
+]
 
 [dependency-groups]
 dev = ["mypy>=1.18", "pytest>=8.4", "pytest-asyncio>=1.2", "ruff>=0.13"]
