@@ -24,17 +24,14 @@ jobs:
       - run: uv sync --frozen
       - run: docker build -t korean-lit-mcp:ci .
       - name: Start isolated test server
-        # Fixture token is public and only used on the runner's loopback address.
         run: >-
           docker run --detach --rm --read-only --tmpfs /tmp --name korean-lit-ci
           -p 127.0.0.1:8000:8080
-          -e MCP_AUTH_TOKEN=ci-fixture-token-01234567890123456789012345678901
           -e MCP_ALLOWED_HOSTS=localhost,127.0.0.1 korean-lit-mcp:ci
       - run: curl --fail --retry 20 --retry-all-errors --retry-delay 1 --retry-max-time 30 http://127.0.0.1:8000/health
       - run: uv run pytest tests/test_http_live.py
         env:
           TEST_MCP_URL: http://127.0.0.1:8000/mcp
-          TEST_MCP_TOKEN: ci-fixture-token-01234567890123456789012345678901
       - if: failure()
         run: docker logs korean-lit-ci
       - if: always()

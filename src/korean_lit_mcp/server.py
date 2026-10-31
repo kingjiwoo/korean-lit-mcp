@@ -1,5 +1,4 @@
 from fastmcp import FastMCP
-from fastmcp.server.auth import StaticTokenVerifier
 
 from korean_lit_mcp.catalogue import SOURCE, NationalLibrary
 from korean_lit_mcp.contracts import (
@@ -16,9 +15,7 @@ from korean_lit_mcp.sources import Edition, SourceError
 from korean_lit_mcp.verification import VerificationResult, verify_quote
 
 
-def create_server(
-    *, editions: tuple[Edition, ...] = (), nl_api_key: str | None = None, token: str | None = None
-) -> FastMCP:
+def create_server(*, editions: tuple[Edition, ...] = (), nl_api_key: str | None = None) -> FastMCP:
     catalogue = NationalLibrary(nl_api_key) if nl_api_key else None
     server = FastMCP(
         "korean-lit-mcp",
@@ -30,11 +27,7 @@ def create_server(
         ),
         mask_error_details=True,
         middleware=[ToolMetrics()],
-        auth=(
-            StaticTokenVerifier(tokens={token: {"sub": "pilot", "client_id": "teacher"}})
-            if token is not None
-            else None
-        ),
+        auth=None,
     )
 
     @server.tool(name="search_works", annotations={"readOnlyHint": True})
