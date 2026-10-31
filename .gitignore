@@ -211,6 +211,12 @@ tempCodeRunnerFile.py
 # PyPI configuration file
 .pypirc
 
+# Project documentation tooling and local review artifacts
+node_modules/
+.local/
+.env.*
+!.env.example
+
 # Marimo
 marimo/_static/
 marimo/_lsp/
