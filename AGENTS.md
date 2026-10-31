@@ -43,3 +43,27 @@ Claude 진입점은 같은 파일을 가리키는 `.claude/skills/check-project`
 ## 작업 보고
 
 작업 결과에는 변경 내용, 실행한 검증, 미검증 영역과 위험을 간단히 적습니다.
+
+<!-- markdownlint-disable MD034 -->
+
+## Deploy Configuration
+
+- Platform: vercel
+- Production URL: https://korean-lit-mcp.vercel.app
+- Deploy workflow: auto-deploy on push to main
+- Deploy status command: npx --yes vercel@65.9.0 inspect https://korean-lit-mcp.vercel.app --json
+- Merge method: squash
+- Release merge method: merge
+- Project type: API
+- Post-deploy health check: https://korean-lit-mcp.vercel.app/health
+
+### Custom deploy hooks
+
+- Pre-merge: none
+- Deploy trigger: automatic on push to main
+- Deploy status: npx --yes vercel@65.9.0 inspect https://korean-lit-mcp.vercel.app --json
+- Health check: https://korean-lit-mcp.vercel.app/health
+
+<!-- markdownlint-enable MD034 -->
+
+작업 PR은 `develop`으로 squash 병합하고, `develop` → `main` 릴리스는 merge commit을 사용합니다. 배포의 Git SHA가 실제 `main` 커밋과 같은지 확인합니다. 헬스체크 후 `TEST_MCP_URL=https://korean-lit-mcp.vercel.app/mcp uv run pytest tests/test_http_live.py`로 실제 도구 호출도 확인합니다. Vercel의 메모리 캐시·호출 제한은 인스턴스마다 별개입니다.

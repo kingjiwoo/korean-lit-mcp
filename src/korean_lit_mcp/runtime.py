@@ -2,16 +2,18 @@
 
 import asyncio
 import logging
+import os
 import time
 import uuid
 from collections import deque
+from pathlib import Path
 
 from starlette.responses import JSONResponse
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 from korean_lit_mcp.metrics import request_id
 from korean_lit_mcp.server import create_server
-from korean_lit_mcp.sources import Edition
+from korean_lit_mcp.sources import Edition, load_editions
 
 
 class Guard:
@@ -129,3 +131,28 @@ def create_http_app(
         if name.split(".")[0] in {"fastmcp", "mcp", "httpx", "httpcore"}:
             logging.getLogger(name).setLevel(logging.CRITICAL)
     return Guard(app)
+
+
+def create_app_from_env() -> Guard:
+    hosts = os.environ.get("MCP_ALLOWED_HOSTS")
+    if hosts is None:
+        hosts = (
+            ",".join(
+                value
+                for name in ("VERCEL_URL", "VERCEL_BRANCH_URL", "VERCEL_PROJECT_PRODUCTION_URL")
+                if (value := os.environ.get(name))
+            )
+            or "localhost,127.0.0.1"
+        )
+    app = create_http_app(
+        editions=load_editions(Path(os.environ.get("WORKS_DIR", "data/works"))),
+        allowed_hosts=[host.strip() for host in hosts.split(",") if host.strip()],
+        allowed_origins=[
+            origin.strip()
+            for origin in os.environ.get("MCP_ALLOWED_ORIGINS", "").split(",")
+            if origin.strip()
+        ],
+        nl_api_key=os.environ.get("NL_API_KEY"),
+    )
+    logging.basicConfig(level=logging.INFO, format="%(name)s %(levelname)s %(message)s")
+    return app
