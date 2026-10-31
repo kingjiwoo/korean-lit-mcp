@@ -216,6 +216,7 @@ node_modules/
 .local/
 .env.*
 !.env.example
+.vercel/
 
 # Marimo
 marimo/_static/

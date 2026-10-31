@@ -1,0 +1,16 @@
+.git
+.venv
+.local
+.env*
+node_modules
+tests
+docs
+.agents
+.claude
+.github
+**/__pycache__
+.mypy_cache
+.ruff_cache
+.pytest_cache
+package.json
+package-lock.json

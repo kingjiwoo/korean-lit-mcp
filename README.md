@@ -30,6 +30,8 @@ npm run lint:md
 
 로컬 서버는 `uv run python -m korean_lit_mcp`로 실행합니다. MCP 주소는 `http://127.0.0.1:8000/mcp`입니다. 원문 TXT의 행 주소는 교과서 문단과 다를 수 있습니다. 인증된 기관 검색 성공, 실제 Claude 계정 연결, 원격 배포와 교사 파일럿은 별도 실증 항목입니다.
 
+공개 MCP 주소는 `https://korean-lit-mcp.vercel.app/mcp`입니다. Claude의 커스텀 커넥터에 이 주소를 등록하고 로그인 없는 방식으로 연결합니다. Vercel은 루트 `app.py`를 ASGI 앱으로 실행하고, 원문 파일은 배포에 포함합니다. 배포·환경변수·검증 절차는 [운영 안내](docs/OPERATIONS.md)를 따릅니다.
+
 ## 개발 문서
 
 - [Claude 작업 규칙](CLAUDE.md)

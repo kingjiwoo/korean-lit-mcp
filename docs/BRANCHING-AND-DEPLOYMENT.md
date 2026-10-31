@@ -31,7 +31,7 @@
 
 브랜치 보호는 `main`·`develop`에 PR과 필수 검사를 요구하도록 설정합니다. 혼자 작업할 때는 작성자가 자기 PR을 승인할 수 없다는 점을 고려해 리뷰 승인 수를 필수로 고정하지 않습니다. 실제 설정 여부는 저장소에서 확인합니다.
 
-2026-10-27에 실제 보호 규칙을 적용했습니다. `develop`은 `python`·`markdown`, `main`은 여기에 `container` 검사를 필수로 둡니다. 관리자에게도 규칙을 적용하고 force-push·삭제를 금지하며 필수 승인 수는 0입니다. 현재 실제 PR 통합과 원격 배포는 대기 중입니다.
+2026-10-27에 실제 보호 규칙을 적용했습니다. `develop`은 `python`·`markdown`, `main`은 여기에 `container` 검사를 필수로 둡니다. 관리자에게도 규칙을 적용하고 force-push·삭제를 금지하며 필수 승인 수는 0입니다. 2026-11-01에 PR #1~#10을 `develop`에 통합했습니다. 코드 검증과 실제 배포 검증은 별도로 기록합니다.
 
 초기 구현은 스택 PR로 검토합니다. 부모 PR을 `develop`에 통합한 뒤 다음 PR의 대상을 `develop`으로 바꾸고, 최신 `develop`을 해당 작업 브랜치에 정상 병합·push해 검사합니다. squash 이력을 맞추기 위해 공유 브랜치의 이력을 강제로 덮어쓰지 않습니다.
 
@@ -46,11 +46,11 @@
 - `main` 병합: production 배포, 헬스체크, 로그 확인을 수행합니다.
 - production 배포에는 되돌릴 수 있는 이전 버전 또는 이전 커밋 기준을 남깁니다.
 
-현재 구현 계획은 Python FastMCP·Streamable HTTP와 GitHub Actions를 기준으로 합니다. 호스팅은 실증 후 한 곳을 선택합니다. 구체적인 작업 순서와 완료 기준은 [구현 작업 계획](IMPLEMENTATION-PLAN.md)을 따릅니다.
+Python FastMCP·Streamable HTTP와 GitHub Actions를 사용하며 호스팅은 Vercel로 확정했습니다. Vercel Git 연동이 preview와 production 배포를 수행합니다. 구체적인 작업 순서와 완료 기준은 [구현 작업 계획](IMPLEMENTATION-PLAN.md)을 따릅니다.
 
 MVP는 SQL DB 없이 운영합니다. 공개 API 응답은 단일 프로세스의 메모리 TTL 캐시에 두고, 필요 시 검수된 원문 파일을 이미지에 포함합니다. 캐시는 재시작 시 재구축하며, 교사 제공 본문·초안은 저장하지 않습니다.
 
-staging에서 검증한 이미지 digest와 원문 자료 버전을 production으로 승격합니다. 릴리스 병합 후 소스 내용이 검증한 후보와 일치하는지 확인합니다. 기관 API 키·캐시는 환경별로 분리하고, 릴리스와 hotfix를 포함한 production 배포는 같은 환경의 다른 배포와 직렬화합니다.
+Vercel에서는 preview에서 검증한 소스·잠금 파일·원문 버전을 `main`으로 배포하고 deployment ID·Git SHA를 기록합니다. 컨테이너 환경에서는 검증한 이미지 digest를 승격합니다. 릴리스 병합 후 소스 내용이 검증한 후보와 일치하는지 확인합니다. 기관 API 키·캐시는 환경별로 분리하고, 릴리스와 hotfix를 포함한 production 배포는 같은 환경의 다른 배포와 직렬화합니다.
 
 ## 릴리스 기준
 
