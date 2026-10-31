@@ -17,7 +17,7 @@ PR 00~09는 Codex가 책임지고 Claude Code의 실제 응답 모델 `claude-op
 | PR 06 | `feature/upstream-cache` | [#7](https://github.com/kingjiwoo/korean-lit-mcp/pull/7) | 캐시·모의 API 검증, 실제 인증 검색 대기 |
 | PR 07 | `feature/remote-operation` | [#8](https://github.com/kingjiwoo/korean-lit-mcp/pull/8) | 인증·HTTP 제한·비루트 컨테이너 검증 |
 | PR 08 | `chore/pilot-deployment` | [#9](https://github.com/kingjiwoo/korean-lit-mcp/pull/9) | Python·Markdown·컨테이너 CI 통과, 원격 배포·교사 실증 대기 |
-| PR 09 | `feature/public-access` | PR 준비 | 사용자 인증 제거·공개 연결 안내, Opus·ponytail 리뷰와 로컬 75개 테스트 통과 |
+| PR 09 | `feature/public-access` | [#10](https://github.com/kingjiwoo/korean-lit-mcp/pull/10) | 사용자 인증 제거·공개 연결 안내, Opus·ponytail 리뷰와 로컬 75개 테스트 통과 |
 
 Draft PR은 실제 외부 검증이나 사람의 검토를 통과했다는 뜻이 아니다. 순서대로 부모 PR을 통합한 뒤 자식 PR을 `develop` 대상으로 바꾼다. squash 통합 후에는 최신 `develop`을 자식 작업 브랜치에 정상 병합하고 다시 검사해 중복 diff를 정리한다.
 
