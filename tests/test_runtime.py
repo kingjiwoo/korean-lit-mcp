@@ -7,24 +7,16 @@ from starlette.testclient import TestClient
 from korean_lit_mcp.runtime import create_http_app
 from korean_lit_mcp.sources import load_editions
 
-TOKEN = "fixture-token-" + "x" * 32
+
+def app():
+    return create_http_app(editions=load_editions(Path("data/works")), allowed_hosts=["testserver"])
 
 
-def app(token: str = TOKEN):
-    return create_http_app(
-        token=token, editions=load_editions(Path("data/works")), allowed_hosts=["testserver"]
-    )
-
-
-def test_token_required_health_available_and_headers() -> None:
+def test_public_tools_do_not_require_login() -> None:
     with TestClient(app()) as client:
         assert client.get("/health").status_code == 200
-        assert client.post("/mcp").status_code == 401
-        assert client.post("/mcp", content=b"x" * (1024 * 1024 + 1)).status_code == 401
-        headers = {
-            "Authorization": "Bearer " + TOKEN,
-            "Accept": "application/json, text/event-stream",
-        }
+        assert client.post("/health").status_code == 405
+        headers = {"Accept": "application/json, text/event-stream"}
         response = client.post(
             "/mcp",
             headers=headers,
@@ -37,54 +29,34 @@ def test_token_required_health_available_and_headers() -> None:
             "verify_quote",
         }
         assert response.headers["cache-control"] == "no-store"
+        assert "www-authenticate" not in response.headers
 
 
-def test_rate_body_and_duplicate_header_guards() -> None:
+def test_public_rate_and_body_guards() -> None:
     guarded = app()
     guarded.clock = lambda: 0.0
     with TestClient(guarded) as client:
-        headers = {"Authorization": "Bearer " + TOKEN}
-        assert (
-            client.post("/mcp", headers=headers, content=b"x" * (1024 * 1024 + 1)).status_code
-            == 413
-        )
-        assert (
-            client.post("/mcp", headers=[("Authorization", "Bearer " + TOKEN)] * 2).status_code
-            == 400
-        )
+        response = client.post("/mcp", content=b"x" * (1024 * 1024 + 1))
+        assert response.status_code == 413
+        assert response.headers["cache-control"] == "no-store"
         for _ in range(29):
-            client.post("/mcp", headers=headers, content=b"{}")
-        assert client.post("/mcp", headers=headers, content=b"{}").status_code == 429
+            client.post("/mcp", content=b"{}")
+        limited = client.post("/mcp", content=b"{}")
+        assert limited.status_code == 429
+        assert limited.headers["retry-after"] == "60"
         guarded.clock = lambda: 61.0
-        assert client.post("/mcp", headers=headers, content=b"{}").status_code != 429
+        assert client.post("/mcp", content=b"{}").status_code != 429
 
 
-def test_bad_configuration_fails_closed() -> None:
-    with pytest.raises(ValueError, match="MCP_AUTH_TOKEN"):
-        app("short")
-
-
-def test_token_rotation_revokes_previous_token() -> None:
-    rotated = TOKEN + "-rotated"
-    with TestClient(app(rotated)) as client:
-        assert client.post("/mcp", headers={"Authorization": "Bearer " + TOKEN}).status_code == 401
-        response = client.post(
-            "/mcp",
-            headers={
-                "Authorization": "Bearer " + rotated,
-                "Accept": "application/json, text/event-stream",
-            },
-            json={"jsonrpc": "2.0", "id": 1, "method": "tools/list", "params": {}},
-        )
-        assert response.status_code == 200
+@pytest.mark.parametrize("hosts", [[], ["*"]])
+def test_public_server_requires_explicit_hosts(hosts: list[str]) -> None:
+    with pytest.raises(ValueError, match="MCP_ALLOWED_HOSTS"):
+        create_http_app(editions=(), allowed_hosts=hosts)
 
 
 def test_untrusted_origin_and_host_are_rejected() -> None:
     with TestClient(app()) as client:
-        headers = {
-            "Authorization": "Bearer " + TOKEN,
-            "Accept": "application/json, text/event-stream",
-        }
+        headers = {"Accept": "application/json, text/event-stream"}
         assert (
             client.post(
                 "/mcp", headers={**headers, "Origin": "https://untrusted.example"}, json={}
@@ -99,25 +71,14 @@ def test_untrusted_origin_and_host_are_rejected() -> None:
         )
 
 
-@pytest.mark.parametrize("scheme", ["Bearer", "bearer", "BEARER"])
-def test_bearer_scheme_case_cannot_bypass_body_guard(scheme: str) -> None:
-    with TestClient(app()) as client:
-        response = client.post(
-            "/mcp",
-            headers={"Authorization": scheme + " " + TOKEN},
-            content=b"x" * (1024 * 1024 + 1),
-        )
-        assert response.status_code == 413
-
-
-def test_rejected_input_and_token_do_not_appear_in_logs(caplog) -> None:
+def test_rejected_input_and_headers_do_not_appear_in_logs(caplog) -> None:
     caplog.set_level(logging.INFO, logger="korean_lit_mcp.metrics")
     secret = "private_source_marker" + "x" * 50000
     with TestClient(app()) as client:
         client.post(
             "/mcp",
             headers={
-                "Authorization": "Bearer " + TOKEN,
+                "Authorization": "Bearer private_header_marker",
                 "Accept": "application/json, text/event-stream",
             },
             json={
@@ -136,5 +97,5 @@ def test_rejected_input_and_token_do_not_appear_in_logs(caplog) -> None:
             },
         )
     assert "private_source_marker" not in caplog.text
-    assert TOKEN not in caplog.text
+    assert "private_header_marker" not in caplog.text
     assert "name=verify_quote" in caplog.text

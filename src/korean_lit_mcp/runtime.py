@@ -1,8 +1,7 @@
-"""Authenticated single-process HTTP serving with bounded request resources."""
+"""Public single-process HTTP serving with bounded request resources."""
 
 import asyncio
 import logging
-import secrets
 import time
 import uuid
 from collections import deque
@@ -16,9 +15,8 @@ from korean_lit_mcp.sources import Edition
 
 
 class Guard:
-    def __init__(self, app: ASGIApp, token: str) -> None:
+    def __init__(self, app: ASGIApp) -> None:
         self.app = app
-        self.authorization = ("Bearer " + token).encode("ascii")
         self.events: deque[float] = deque()
         self.active = 0
         self.clock = time.monotonic
@@ -33,26 +31,6 @@ class Guard:
                 {"status": "ok"} if status == 200 else {"error": "method_not_allowed"},
                 status_code=status,
                 headers={"Cache-Control": "no-store"},
-            )(scope, receive, send)
-            return
-        headers = [v for k, v in scope["headers"] if k.lower() == b"authorization"]
-        if len(headers) > 1:
-            await JSONResponse(
-                {"error": "duplicate_authorization"},
-                status_code=400,
-                headers={"Cache-Control": "no-store"},
-            )(scope, receive, send)
-            return
-        authorized = (
-            bool(headers)
-            and headers[0][:7].lower() == b"bearer "
-            and secrets.compare_digest(headers[0][7:], self.authorization[7:])
-        )
-        if not authorized:
-            await JSONResponse(
-                {"error": "unauthorized"},
-                status_code=401,
-                headers={"WWW-Authenticate": "Bearer", "Cache-Control": "no-store"},
             )(scope, receive, send)
             return
         now = self.clock()
@@ -131,17 +109,14 @@ class Guard:
 
 def create_http_app(
     *,
-    token: str,
     editions: tuple[Edition, ...],
     allowed_hosts: list[str],
     allowed_origins: list[str] | None = None,
     nl_api_key: str | None = None,
 ) -> Guard:
-    if len(token) < 32 or not token.isascii() or any(c.isspace() for c in token):
-        raise ValueError("MCP_AUTH_TOKEN must be an ASCII token of at least 32 characters.")
     if not allowed_hosts or "*" in allowed_hosts:
         raise ValueError("Explicit MCP_ALLOWED_HOSTS are required.")
-    server = create_server(editions=editions, token=token, nl_api_key=nl_api_key)
+    server = create_server(editions=editions, nl_api_key=nl_api_key)
     app = server.http_app(
         json_response=True,
         stateless_http=True,
@@ -153,4 +128,4 @@ def create_http_app(
     for name in ["fastmcp", "mcp", "httpx", "httpcore", *logging.Logger.manager.loggerDict]:
         if name.split(".")[0] in {"fastmcp", "mcp", "httpx", "httpcore"}:
             logging.getLogger(name).setLevel(logging.CRITICAL)
-    return Guard(app, token)
+    return Guard(app)

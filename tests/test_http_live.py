@@ -5,19 +5,16 @@ import pytest
 from fastmcp import Client
 
 URL = os.getenv("TEST_MCP_URL")
-TOKEN = os.getenv("TEST_MCP_TOKEN")
-pytestmark = pytest.mark.skipif(not URL or not TOKEN, reason="Set TEST_MCP_URL and TEST_MCP_TOKEN")
+pytestmark = pytest.mark.skipif(not URL, reason="Set TEST_MCP_URL")
 
 
 async def test_live_http_workflow() -> None:
-    assert URL and TOKEN
+    assert URL
     async with httpx.AsyncClient() as http:
         assert (await http.get(URL.rstrip("/").removesuffix("/mcp") + "/health")).status_code == 200
-        assert (await http.post(URL)).status_code == 401
         legacy = await http.post(
             URL,
             headers={
-                "Authorization": "Bearer " + TOKEN,
                 "Accept": "application/json, text/event-stream",
                 "Mcp-Protocol-Version": "2025-11-25",
             },
@@ -34,7 +31,12 @@ async def test_live_http_workflow() -> None:
         )
         assert legacy.status_code == 200
         assert legacy.json()["result"]["protocolVersion"] == "2025-11-25"
-    async with Client(URL, auth=TOKEN) as client:
+    async with Client(URL) as client:
+        assert {tool.name for tool in await client.list_tools()} == {
+            "search_works",
+            "get_passage",
+            "verify_quote",
+        }
         result = await client.call_tool(
             "get_passage", {"request": {"work_id": "gongu-9000397", "start": 2, "end": 2}}
         )

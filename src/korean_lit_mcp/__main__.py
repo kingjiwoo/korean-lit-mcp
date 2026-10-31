@@ -8,13 +8,9 @@ from korean_lit_mcp.runtime import create_http_app
 from korean_lit_mcp.sources import load_editions
 
 if __name__ == "__main__":
-    token = os.environ.get("MCP_AUTH_TOKEN", "")
-    if not token:
-        raise SystemExit("Set MCP_AUTH_TOKEN to a private token of at least 32 characters.")
     editions = load_editions(Path(os.environ.get("WORKS_DIR", "data/works")))
     try:
         app = create_http_app(
-            token=token,
             editions=editions,
             allowed_hosts=os.environ.get("MCP_ALLOWED_HOSTS", "localhost,127.0.0.1").split(","),
             allowed_origins=[x for x in os.environ.get("MCP_ALLOWED_ORIGINS", "").split(",") if x],
