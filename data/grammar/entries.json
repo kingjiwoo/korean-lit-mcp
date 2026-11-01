@@ -1,0 +1,392 @@
+[
+  {
+    "entry_id": "modern-subject-particle",
+    "term": "주격 조사",
+    "period": "modern",
+    "aliases": [
+      "주격 토",
+      "임자자리토씨"
+    ],
+    "explanation": "체언이나 체언 역할을 하는 말 뒤에서 주어의 자격을 표시하는 격 조사이다. 이/가, 께서 등이 해당한다.",
+    "sources": [
+      {
+        "title": "우리말샘(온용어): 주격 토",
+        "author": "국립국어원",
+        "url": "https://kli.korean.go.kr/term/trgtWord/indexTrgtWord.do?trgtWordNo=2458358",
+        "location": "인문사회학 > 언어학 / 뜻풀이·관련 용어명",
+        "version": "2023년 6월 우리말샘 전문 용어 분류본",
+        "checked_at": "2026-11-01",
+        "license": "CC-BY-SA-2.0-KR",
+        "license_url": "https://creativecommons.org/licenses/by-sa/2.0/kr/",
+        "changes": "뜻풀이를 요약하고 검토한 별칭·시대·예시·적용 한계를 추가함. 수어·이미지·외부 인용 예문은 제외함."
+      }
+    ],
+    "examples": [
+      {
+        "text": "학생이 책을 읽는다. — '이'의 주격 조사 용례를 설명하기 위한 합성 문장.",
+        "kind": "constructed",
+        "source_url": null,
+        "location": "프로젝트 작성 합성 예시. 실제 문헌 인용이 아님."
+      }
+    ],
+    "limitations": [
+      "주어의 자격과 화제의 의미를 동일하게 판정하는 도구가 아니다. 실제 문장에 쓰인 조사의 기능은 분석하지 않는다."
+    ],
+    "entry_version": "2026-11-01.1"
+  },
+  {
+    "entry_id": "modern-auxiliary-particle",
+    "term": "보조사",
+    "period": "modern",
+    "aliases": [
+      "보조 조사",
+      "도움토",
+      "도움토씨",
+      "특수 조사",
+      "한정 조사"
+    ],
+    "explanation": "체언·부사·활용 어미 등에 붙어 특별한 의미를 더하는 조사이다. 은/는, 도, 만 등이 있다.",
+    "sources": [
+      {
+        "title": "우리말샘(온용어): 보조사",
+        "author": "국립국어원",
+        "url": "https://kli.korean.go.kr/term/trgtWord/indexTrgtWord.do?trgtWordNo=2206887",
+        "location": "인문사회학 > 언어학 / 뜻풀이·관련 용어명",
+        "version": "2023년 6월 우리말샘 전문 용어 분류본",
+        "checked_at": "2026-11-01",
+        "license": "CC-BY-SA-2.0-KR",
+        "license_url": "https://creativecommons.org/licenses/by-sa/2.0/kr/",
+        "changes": "뜻풀이를 요약하고 검토한 별칭·시대·예시·적용 한계를 추가함. 수어·이미지·외부 인용 예문은 제외함."
+      }
+    ],
+    "examples": [
+      {
+        "text": "나도 책을 읽는다. — '도'를 설명하기 위한 합성 문장.",
+        "kind": "constructed",
+        "source_url": null,
+        "location": "프로젝트 작성 합성 예시. 실제 문헌 인용이 아님."
+      }
+    ],
+    "limitations": [
+      "각 보조사의 의미와 결합 조건 전체를 제공하지 않는다. 조사 판별이나 문장 정답 판정은 수행하지 않는다."
+    ],
+    "entry_version": "2026-11-01.1"
+  },
+  {
+    "entry_id": "modern-stem",
+    "term": "어간",
+    "period": "modern",
+    "aliases": [
+      "줄기"
+    ],
+    "explanation": "활용하는 말에서 어미와 구별되는 기본 부분이다. 규칙 활용의 먹다·먹고에서는 먹-을 확인할 수 있다.",
+    "sources": [
+      {
+        "title": "우리말샘(온용어): 어간",
+        "author": "국립국어원",
+        "url": "https://kli.korean.go.kr/term/trgtWord/indexTrgtWord.do?trgtWordNo=2330568",
+        "location": "인문사회학 > 언어학 / 뜻풀이·관련 용어명",
+        "version": "2023년 6월 우리말샘 전문 용어 분류본",
+        "checked_at": "2026-11-01",
+        "license": "CC-BY-SA-2.0-KR",
+        "license_url": "https://creativecommons.org/licenses/by-sa/2.0/kr/",
+        "changes": "뜻풀이를 요약하고 검토한 별칭·시대·예시·적용 한계를 추가함. 수어·이미지·외부 인용 예문은 제외함."
+      }
+    ],
+    "examples": [
+      {
+        "text": "먹다 / 먹고 / 먹으니 → 먹-",
+        "kind": "constructed",
+        "source_url": null,
+        "location": "프로젝트 작성 합성 예시. 실제 문헌 인용이 아님."
+      }
+    ],
+    "limitations": [
+      "규칙 활용을 설명하는 기초 항목이다. 불규칙 활용이나 임의 문장의 형태소 분석을 자동 수행하지 않는다."
+    ],
+    "entry_version": "2026-11-01.1"
+  },
+  {
+    "entry_id": "modern-final-ending",
+    "term": "어말 어미",
+    "period": "modern",
+    "aliases": [
+      "맺음씨끝"
+    ],
+    "explanation": "활용 어미 중 맨 뒤에 오는 어미를 이른다. 종결·연결·전성 어미 등으로 나누며 선어말 어미와 구분한다.",
+    "sources": [
+      {
+        "title": "우리말샘(온용어): 어말 어미",
+        "author": "국립국어원",
+        "url": "https://kli.korean.go.kr/term/trgtWord/indexTrgtWord.do?trgtWordNo=2331161",
+        "location": "인문사회학 > 언어학 / 뜻풀이·관련 용어명",
+        "version": "2023년 6월 우리말샘 전문 용어 분류본",
+        "checked_at": "2026-11-01",
+        "license": "CC-BY-SA-2.0-KR",
+        "license_url": "https://creativecommons.org/licenses/by-sa/2.0/kr/",
+        "changes": "뜻풀이를 요약하고 검토한 별칭·시대·예시·적용 한계를 추가함. 수어·이미지·외부 인용 예문은 제외함."
+      }
+    ],
+    "examples": [
+      {
+        "text": "먹었다 → -다. 어말 어미의 위치를 보여 주는 합성 예시.",
+        "kind": "constructed",
+        "source_url": null,
+        "location": "프로젝트 작성 합성 예시. 실제 문헌 인용이 아님."
+      }
+    ],
+    "limitations": [
+      "어미 전체를 어말 어미와 동일시하지 않는다. 세부 어미의 모든 분류나 문장별 분석을 제공하지 않는다."
+    ],
+    "entry_version": "2026-11-01.1"
+  },
+  {
+    "entry_id": "modern-sentence-ending",
+    "term": "종결 어미",
+    "period": "modern",
+    "aliases": [
+      "문말 어미",
+      "끝씨",
+      "종지사"
+    ],
+    "explanation": "문장을 끝맺는 어말 어미이다. 서술·질문·명령 등 문장의 종결 방식과 관련된다.",
+    "sources": [
+      {
+        "title": "우리말샘(온용어): 종결 어미",
+        "author": "국립국어원",
+        "url": "https://kli.korean.go.kr/term/trgtWord/indexTrgtWord.do?trgtWordNo=2455777",
+        "location": "인문사회학 > 언어학 / 뜻풀이·관련 용어명",
+        "version": "2023년 6월 우리말샘 전문 용어 분류본",
+        "checked_at": "2026-11-01",
+        "license": "CC-BY-SA-2.0-KR",
+        "license_url": "https://creativecommons.org/licenses/by-sa/2.0/kr/",
+        "changes": "뜻풀이를 요약하고 검토한 별칭·시대·예시·적용 한계를 추가함. 수어·이미지·외부 인용 예문은 제외함."
+      }
+    ],
+    "examples": [
+      {
+        "text": "책을 읽는다. — 문장을 끝맺는 '-는다'를 설명하기 위한 합성 예시.",
+        "kind": "constructed",
+        "source_url": null,
+        "location": "프로젝트 작성 합성 예시. 실제 문헌 인용이 아님."
+      }
+    ],
+    "limitations": [
+      "용언 종류에 따라 결합할 수 있는 종결 방식이 다르다. 종결 어미의 전체 목록이나 정답 판정은 제공하지 않는다."
+    ],
+    "entry_version": "2026-11-01.1"
+  },
+  {
+    "entry_id": "modern-allomorph",
+    "term": "이형태",
+    "period": "modern",
+    "aliases": [
+      "변이형",
+      "교체형"
+    ],
+    "explanation": "같은 형태소가 주변 환경에 따라 달리 나타나는 형태를 이른다. 이/가, 을/를 같은 짝이 예이다.",
+    "sources": [
+      {
+        "title": "우리말샘(온용어): 변이형",
+        "author": "국립국어원",
+        "url": "https://kli.korean.go.kr/term/trgtWord/indexTrgtWord.do?trgtWordNo=2202490",
+        "location": "인문사회학 > 언어학 / 뜻풀이·관련 용어명",
+        "version": "2023년 6월 우리말샘 전문 용어 분류본",
+        "checked_at": "2026-11-01",
+        "license": "CC-BY-SA-2.0-KR",
+        "license_url": "https://creativecommons.org/licenses/by-sa/2.0/kr/",
+        "changes": "뜻풀이를 요약하고 검토한 별칭·시대·예시·적용 한계를 추가함. 수어·이미지·외부 인용 예문은 제외함."
+      }
+    ],
+    "examples": [
+      {
+        "text": "책이 / 나무가 — 이/가의 형태 차이를 보여 주는 합성 예시.",
+        "kind": "constructed",
+        "source_url": null,
+        "location": "프로젝트 작성 합성 예시. 실제 문헌 인용이 아님."
+      }
+    ],
+    "limitations": [
+      "모양이 다른 모든 말을 하나의 형태소로 묶는 기준이 아니다. 임의 형태의 동일성이나 역사적 관계를 판정하지 않는다."
+    ],
+    "entry_version": "2026-11-01.1"
+  },
+  {
+    "entry_id": "modern-subject-honorific",
+    "term": "주체 높임법",
+    "period": "modern",
+    "aliases": [
+      "존경법",
+      "주체 존대법"
+    ],
+    "explanation": "용언에 -시- 같은 선어말 어미를 사용해 문장의 주체를 높여 표현하는 방법이다.",
+    "sources": [
+      {
+        "title": "우리말샘(온용어): 존경법",
+        "author": "국립국어원",
+        "url": "https://kli.korean.go.kr/term/trgtWord/indexTrgtWord.do?trgtWordNo=2455265",
+        "location": "인문사회학 > 언어학 / 뜻풀이·관련 용어명",
+        "version": "2023년 6월 우리말샘 전문 용어 분류본",
+        "checked_at": "2026-11-01",
+        "license": "CC-BY-SA-2.0-KR",
+        "license_url": "https://creativecommons.org/licenses/by-sa/2.0/kr/",
+        "changes": "뜻풀이를 요약하고 검토한 별칭·시대·예시·적용 한계를 추가함. 수어·이미지·외부 인용 예문은 제외함."
+      }
+    ],
+    "examples": [
+      {
+        "text": "선생님께서 책을 읽으신다. — 주체 높임을 설명하기 위한 합성 문장.",
+        "kind": "constructed",
+        "source_url": null,
+        "location": "프로젝트 작성 합성 예시. 실제 문헌 인용이 아님."
+      }
+    ],
+    "limitations": [
+      "학교 문법의 기초 개념 조회이다. 상황별 높임의 적절성이나 임의 문장의 높임 표현은 판정하지 않는다."
+    ],
+    "entry_version": "2026-11-01.1"
+  },
+  {
+    "entry_id": "modern-object-honorific",
+    "term": "객체 높임법",
+    "period": "modern",
+    "aliases": [
+      "겸양법",
+      "객체 경어법",
+      "객체 존대법"
+    ],
+    "explanation": "주어의 행위가 미치는 대상을 높이는 방법이다. 현대 국어에서는 뵙다·드리다·여쭈다 같은 어휘로 표현한다.",
+    "sources": [
+      {
+        "title": "우리말샘(온용어): 객체 높임법",
+        "author": "국립국어원",
+        "url": "https://kli.korean.go.kr/term/trgtWord/indexTrgtWord.do?trgtWordNo=2017993",
+        "location": "인문사회학 > 언어학 / 뜻풀이·관련 용어명",
+        "version": "2023년 6월 우리말샘 전문 용어 분류본",
+        "checked_at": "2026-11-01",
+        "license": "CC-BY-SA-2.0-KR",
+        "license_url": "https://creativecommons.org/licenses/by-sa/2.0/kr/",
+        "changes": "뜻풀이를 요약하고 검토한 별칭·시대·예시·적용 한계를 추가함. 수어·이미지·외부 인용 예문은 제외함."
+      }
+    ],
+    "examples": [
+      {
+        "text": "학생이 선생님께 여쭈었다. — 객체 높임을 설명하기 위한 합성 문장.",
+        "kind": "constructed",
+        "source_url": null,
+        "location": "프로젝트 작성 합성 예시. 실제 문헌 인용이 아님."
+      }
+    ],
+    "limitations": [
+      "중세 국어의 선어말 어미 체계와 구분한다. 실제 발화의 높임 적절성을 자동 판단하지 않는다."
+    ],
+    "entry_version": "2026-11-01.1"
+  },
+  {
+    "entry_id": "middle-h-final-noun",
+    "term": "ㅎ 받침 체언",
+    "period": "middle",
+    "aliases": [
+      "히읗 받침 체언",
+      "히읗 종성 체언"
+    ],
+    "explanation": "중세 국어에서 끝에 ㅎ을 지녔던 체언을 이른다. 뒤따르는 조사에 따라 ㅎ이 유지되거나, 뒤의 예사소리 ㄱ·ㄷ·ㅂ과 결합해 거센소리 ㅋ·ㅌ·ㅍ으로 나타나거나, 탈락한다.",
+    "sources": [
+      {
+        "title": "우리말샘(온용어): ㅎ 받침 체언",
+        "author": "국립국어원",
+        "url": "https://kli.korean.go.kr/term/trgtWord/indexTrgtWord.do?trgtWordNo=2000065",
+        "location": "인문사회학 > 언어학 / 뜻풀이·관련 용어명",
+        "version": "2023년 6월 우리말샘 전문 용어 분류본",
+        "checked_at": "2026-11-01",
+        "license": "CC-BY-SA-2.0-KR",
+        "license_url": "https://creativecommons.org/licenses/by-sa/2.0/kr/",
+        "changes": "뜻풀이를 요약하고 검토한 별칭·시대·예시·적용 한계를 추가함. 수어·이미지·외부 인용 예문은 제외함."
+      }
+    ],
+    "examples": [
+      {
+        "text": "돓",
+        "kind": "source_example",
+        "source_url": "https://kli.korean.go.kr/term/trgtWord/indexTrgtWord.do?trgtWordNo=2000065",
+        "location": "뜻풀이 말미에 나열된 체언 형태. 실제 문헌명·출현 위치는 해당 사전 항목에 제시되지 않음."
+      }
+    ],
+    "limitations": [
+      "사전의 개념·형태 예시이며 특정 문헌의 검수 원문을 제공하는 항목이 아니다. 현대 체언에 같은 규칙을 적용하지 않는다."
+    ],
+    "entry_version": "2026-11-01.1"
+  },
+  {
+    "entry_id": "middle-object-honorific",
+    "term": "객체 높임법",
+    "period": "middle",
+    "aliases": [
+      "겸양법",
+      "객체 경어법",
+      "객체 존대법"
+    ],
+    "explanation": "중세 국어에서는 동사·형용사에 선어말 어미를 붙여 행위가 미치는 대상을 높이는 표현이 쓰였다.",
+    "sources": [
+      {
+        "title": "우리말샘(온용어): 객체 높임법",
+        "author": "국립국어원",
+        "url": "https://kli.korean.go.kr/term/trgtWord/indexTrgtWord.do?trgtWordNo=2017993",
+        "location": "인문사회학 > 언어학 / 뜻풀이·관련 용어명",
+        "version": "2023년 6월 우리말샘 전문 용어 분류본",
+        "checked_at": "2026-11-01",
+        "license": "CC-BY-SA-2.0-KR",
+        "license_url": "https://creativecommons.org/licenses/by-sa/2.0/kr/",
+        "changes": "뜻풀이를 요약하고 검토한 별칭·시대·예시·적용 한계를 추가함. 수어·이미지·외부 인용 예문은 제외함."
+      }
+    ],
+    "examples": [
+      {
+        "text": "--",
+        "kind": "source_example",
+        "source_url": "https://kli.korean.go.kr/term/trgtWord/indexTrgtWord.do?trgtWordNo=2017993",
+        "location": "뜻풀이의 중세 선어말 어미 형태 중 하나. 주변 공백은 생략했고 사설 영역 글리프는 유지함. 문헌 인용문이 아님."
+      }
+    ],
+    "limitations": [
+      "현대 국어의 높임 어휘와 구분한다. 이형태 분포 전체나 문장 분석을 제공하지 않는다.",
+      "예시에는 원자료의 사설 영역 문자가 있어 글꼴에 따라 표시가 다를 수 있다. Unicode 문자로 임의 치환하지 않는다."
+    ],
+    "entry_version": "2026-11-01.1"
+  },
+  {
+    "entry_id": "early-modern-double-spelling",
+    "term": "중철",
+    "period": "early_modern",
+    "aliases": [
+      "거듭 적기"
+    ],
+    "explanation": "이어 적기와 끊어 적기를 겹쳐 쓰는 근대 국어의 역사적 표기 방식이다.",
+    "sources": [
+      {
+        "title": "우리말샘(온용어): 중철",
+        "author": "국립국어원",
+        "url": "https://kli.korean.go.kr/term/trgtWord/indexTrgtWord.do?trgtWordNo=2466435",
+        "location": "인문사회학 > 언어학 / 뜻풀이·관련 용어명",
+        "version": "2023년 6월 우리말샘 전문 용어 분류본",
+        "checked_at": "2026-11-01",
+        "license": "CC-BY-SA-2.0-KR",
+        "license_url": "https://creativecommons.org/licenses/by-sa/2.0/kr/",
+        "changes": "뜻풀이를 요약하고 검토한 별칭·시대·예시·적용 한계를 추가함. 수어·이미지·외부 인용 예문은 제외함."
+      }
+    ],
+    "examples": [
+      {
+        "text": "말이 → 말미",
+        "kind": "source_example",
+        "source_url": "https://kli.korean.go.kr/term/trgtWord/indexTrgtWord.do?trgtWordNo=2466435",
+        "location": "뜻풀이의 두 예시 형태를 화살표로 배열함. 원자료 글리프는 유지했으며 문헌 인용문이 아님."
+      }
+    ],
+    "limitations": [
+      "근대의 표기법 개념 한 항목이며 근대 문법 체계 전체를 다루지 않는다. 현대 맞춤법의 정오를 판정하지 않는다.",
+      "예시에는 사설 영역 문자가 있다. 특정 문헌·연도에서의 출현은 검증하지 않았다."
+    ],
+    "entry_version": "2026-11-01.1"
+  }
+]
