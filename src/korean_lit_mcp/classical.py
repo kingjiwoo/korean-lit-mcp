@@ -12,7 +12,7 @@ import httpx
 from pydantic import Field, HttpUrl
 
 from korean_lit_mcp.cache import CacheBusy, PublicCache
-from korean_lit_mcp.contracts import Envelope, Input, Source, Text
+from korean_lit_mcp.contracts import Envelope, Input, SearchContext, Source, Text
 from korean_lit_mcp.sources import SourceError
 
 SOURCE = Source(name="한국고전종합DB", url=HttpUrl("https://db.itkc.or.kr/etc/openAPI?type=page1"))
@@ -147,6 +147,11 @@ class ClassicalLibrary:
         return Envelope(
             items=items,
             source=SOURCE,
+            search_context=SearchContext(
+                request=request.model_dump(mode="json"),
+                scope="itkc",
+                outcome="related_records" if items else "no_matches",
+            ),
             retrieved_at=datetime.fromisoformat(data["retrieved_at"]),
             note=f"전체 {data['total']}건 중 첫 {len(items)}건. 검색필드는 기관의 검색 발췌이며 "
             "강조 마크업이 포함될 수 있습니다. 작품 전문·검수 판본이 아니며 "
@@ -158,5 +163,7 @@ class ClassicalLibrary:
                 if request.target == "title"
                 else "본문 언급 검색 결과이며 작품 자체를 찾은 것이 아닙니다. "
             )
-            + "캐시 최대 5분.",
+            + "현재 검색 범위의 결과이며 전체 자료원 미수록을 뜻하지 않습니다. "
+            "원문 미확보 시 확인한 판본이나 교사 제공 본문으로 대조하세요. "
+            "모델 기억·추정 복원을 원문으로 사용하지 마세요. 캐시 최대 5분.",
         )

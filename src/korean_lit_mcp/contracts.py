@@ -26,6 +26,22 @@ class ErrorInfo(BaseModel):
     message: str
 
 
+class SearchContext(BaseModel):
+    request: dict[str, object]
+    scope: Literal["reviewed_catalogue", "reviewed_catalogue_and_nl", "itkc"]
+    outcome: Literal[
+        "matches",
+        "no_matches",
+        "empty_catalogue",
+        "related_records",
+        "upstream_error",
+        "partial_results",
+    ]
+    reviewed_work_count: int | None = None
+    reviewed_edition_count: int | None = None
+    upstream_error: ErrorInfo | None = None
+
+
 class Envelope[T](BaseModel):
     items: list[T] = Field(default_factory=list)
     source: Source
@@ -33,6 +49,7 @@ class Envelope[T](BaseModel):
     retrieved_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     note: str = ""
     error: ErrorInfo | None = None
+    search_context: SearchContext | None = None
 
     @model_validator(mode="after")
     def validate_error(self) -> Self:
