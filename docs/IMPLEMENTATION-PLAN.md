@@ -410,7 +410,7 @@ Vercel 배포 보완: `app.py`의 ASGI 진입점과 공통 환경설정, 원문 
 
 ### PR 순서
 
-아래 PR 번호는 작업 계획의 단계 번호이며 GitHub 실제 PR 번호와 다르다. 조사·검색 구현·기사명 탐색은 이번 PR에서 함께 검토한다. 실제 실증과 설계 결정은 [ITKC 검색 연동 기록](decisions/0002-itkc-search.md)에 둔다.
+아래 PR 번호는 작업 계획의 단계 번호이며 GitHub 실제 PR 번호와 다르다. 조사·검색 구현·기사명 탐색은 실제 GitHub PR #14에서 함께 통합했다. 실제 실증과 설계 결정은 [ITKC 검색 연동 기록](decisions/0002-itkc-search.md)에 둔다.
 
 | PR | 브랜치 예시 | 범위 | 완료 기준 |
 | --- | --- | --- | --- |
@@ -436,3 +436,15 @@ PR 12의 요청 입력은 `query`, 제한된 `collection`(`classic`, `anthology`
 - 키와 교사 입력은 저장소·fixture·로그에 남기지 않는다. API 장애와 미허용·불명 자료를 빈 성공으로 숨기지 않는다.
 - 제목만으로 목록 레코드와 텍스트 판본을 연결하지 않는다. 고유 ID 또는 검토한 명시적 매핑을 사용한다.
 - 작품 수 자체가 아니라 개별 제공 텍스트의 권리·무결성·주소 정확성을 모두 충족해야 제공한다.
+
+## 14. 키 없는 작업 실행 순서 (2026-11-01)
+
+13절의 PR 번호는 단계 이름이며 GitHub PR 번호가 아니다. 이번 실행은 다음처럼 분리한다.
+
+| 작업 | 실제 브랜치/PR | 완료 기준 |
+| --- | --- | --- |
+| 검색 저자·범위 수정 | `fix/classical-author-scope`, PR #18 (develop 통합 완료) | [이슈 #17](https://github.com/kingjiwoo/korean-lit-mcp/issues/17)의 저자 혼동 재현 사례, 기존 필드 호환, 테스트·리뷰 후 develop 통합 |
+| 출처 실증·문법 계약 | `docs/keyless-source-contracts` (현재 PR) | 한국학자료센터 공개 테스트 API와 HTTPS·전문 한계 기록, 문법 입력/출력·자료·오류·검증 계약 확정, 필수 검사·리뷰 후 develop 통합 |
+| README·진행 상태 | `docs/current-capabilities` (후속 PR) | 현재 동작 기능·설정·예시·미지원 범위·남은 외부 조건을 일치시키고 develop 통합 |
+
+[키 없는 출처 실증](decisions/0003-keyless-sources.md)에서 한국학자료센터 문헌 목록은 확인했지만 Python HTTPS 연결과 전문 공급을 확인하지 못했다. 검색 커넥터를 검증 완료로 추가하지 않는다. [문법 도구 계약](GRAMMAR-TOOL-PLAN.md)은 확정했지만 재사용 가능한 검수 항목이 없어 새 문법 도구를 등록하지 않는다. 국립중앙도서관 키 대기와 이 두 조건은 서로 별개다.
