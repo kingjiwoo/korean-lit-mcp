@@ -457,8 +457,8 @@ PR 12의 요청 입력은 `query`, 제한된 `collection`(`classic`, `anthology`
 
 키 없는 후속 작업은 [이슈 #32](https://github.com/kingjiwoo/korean-lit-mcp/issues/32)에서 추적한다.
 
-- #28 PR-A: 작품 후보·검수 이칭과 검색 문헌 분리. 초안 [PR #33](https://github.com/kingjiwoo/korean-lit-mcp/pull/33), Claude 사용량 제한으로 교차 리뷰 대기.
-- #31 PR-D: 실제 검색어·검색 범위·목록 크기·실패 상태, 원문 미확보 안내와 교사 본문 대조 흐름. 이 PR에서 구현·검사하며 교차 리뷰 후 develop 통합.
+- #28 PR-A: 작품 후보·검수 이칭과 검색 문헌 분리. [계약과 근거](decisions/0004-classical-identity.md). 초안 [PR #33](https://github.com/kingjiwoo/korean-lit-mcp/pull/33), Claude 사용량 제한으로 교차 리뷰 대기.
+- #31 PR-D: 실제 검색어·검색 범위·목록 크기·실패 상태, 원문 미확보 안내와 교사 본문 대조 흐름. PR #33 위에 쌓은 후속 PR에서 구현·로컬 검사 완료. Claude 사용량 제한으로 교차 리뷰 대기.
 - #29 PR-B: NL 실제 응답·원문 접근 경로는 키 발급 후 검증.
 - #30 PR-C: 고전 검수 전문은 출처·판본·재사용 조건과 데이터 확보 후 추가.
 

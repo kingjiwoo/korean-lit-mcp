@@ -70,3 +70,7 @@ PR #18 이후 필수 검사는 pytest 104 passed / 1 skipped와 Ruff lint·forma
 키 없는 후속 구현을 두 PR로 분리했다. [PR #33](https://github.com/kingjiwoo/korean-lit-mcp/pull/33)은 세 작품의 발견용 이칭·귀속 근거와 ITKC 검색 레코드를 구분한다. PR-D(#31)는 실제 요청·검색 범위·검수 목록 수와 검색 결과 상태, 원문 미확보 시 안내, 검증 기준과 한계를 응답에 표시한다. 본문 공급이나 서버 LLM 기능은 추가하지 않았다.
 
 PR-A 로컬 검사는 111 passed / 1 skipped이며 필수 정적·문서 검사도 통과했다. Claude Opus 교차 리뷰 호출은 사용량 제한(429, 리뷰 토큰 0)으로 실패했다. 자체 검토·로컬 검사·CI 성공을 교차 리뷰 성공으로 간주하지 않으며, 교차 리뷰가 끝날 때까지 초안 PR을 develop에 병합하지 않는다. 운영 배포와 NL 인증 실증은 수행하지 않았다.
+
+PR-A와 PR-D를 함께 적용한 최종 로컬 검사는 121 passed / 1 skipped와 Ruff lint·format, mypy, Markdown lint 통과다. 원격 production 검사는 실행하지 않았다. PR-D는 PR-A 브랜치 위에 쌓았으며, PR-A를 develop에 squash 통합한 뒤 후속 PR의 대상을 develop으로 바꾸고 최신 develop을 정상 병합해 CI를 다시 확인한다. 두 PR 모두 Claude Opus 리뷰 호출이 429 사용량 제한으로 실패해 초안 상태다. Codex 자체 ponytail 검토에서는 호출부·직렬화·부분 실패·검증 기준·입력 비보관을 확인했고 미해결 결함은 찾지 못했다. 독립 교차 리뷰를 대체한 것으로 표시하지 않는다.
+
+별도 실제 ITKC 무키 기사명 검색을 현재 코드로 확인했다(2026-11-01, collection=classic, limit=3). 규원가는 2개 검색 레코드가 검수 이칭 불일치로, 사미인곡은 1개 제목 후보로 표시됐고 홍길동전은 해당 범위에서 0건이었다. 세 검색어 모두 발견용 작품 후보는 반환됐지만 검색 레코드의 `available_text`는 전부 false다. 이는 새 전문 공급·동일 작품 확정·모든 컬렉션 부재의 검증이 아니다. NL 인증 API와 실제 교사 클라이언트 동작은 확인하지 않았다.
