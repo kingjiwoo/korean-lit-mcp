@@ -3,6 +3,7 @@ import os
 import httpx
 import pytest
 from fastmcp import Client
+from fastmcp.exceptions import ToolError
 
 URL = os.getenv("TEST_MCP_URL")
 pytestmark = pytest.mark.skipif(not URL, reason="Set TEST_MCP_URL")
@@ -37,6 +38,7 @@ async def test_live_http_workflow() -> None:
             "search_classical_text",
             "get_passage",
             "verify_quote",
+            "lookup_grammar",
         }
         result = await client.call_tool(
             "get_passage", {"request": {"work_id": "gongu-9000397", "start": 2, "end": 2}}
@@ -56,3 +58,27 @@ async def test_live_http_workflow() -> None:
             },
         )
         assert verified.structured_content["all_submitted_exact"]
+        for term, period, entry_id in (
+            ("주격조사", "modern", "modern-subject-particle"),
+            ("히읗종성체언", "middle", "middle-h-final-noun"),
+            ("거듭적기", "early_modern", "early-modern-double-spelling"),
+        ):
+            grammar = await client.call_tool(
+                "lookup_grammar", {"request": {"term": term, "period": period}}
+            )
+            assert grammar.structured_content is not None
+            item = grammar.structured_content["items"][0]
+            assert item["entry_id"] == entry_id and item["period"] == period
+            assert item["sources"][0]["license"] == "CC-BY-SA-2.0-KR"
+            if period == "early_modern":
+                assert item["examples"][0]["text"] == "말이 → 말미"
+        missing = await client.call_tool(
+            "lookup_grammar", {"request": {"term": "수록되지않은문법개념", "period": "middle"}}
+        )
+        assert missing.structured_content is not None
+        assert missing.structured_content["items"] == []
+        assert missing.structured_content["error"] is None
+        with pytest.raises(ToolError):
+            await client.call_tool(
+                "lookup_grammar", {"request": {"term": "어간", "period": "modern", "limit": 11}}
+            )

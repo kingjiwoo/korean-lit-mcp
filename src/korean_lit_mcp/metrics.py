@@ -18,7 +18,13 @@ class ToolMetrics(Middleware):
         call_next: CallNext[CallToolRequestParams, ToolResult],
     ) -> ToolResult:
         name = context.message.name
-        if name not in {"search_works", "get_passage", "verify_quote", "search_classical_text"}:
+        if name not in {
+            "search_works",
+            "get_passage",
+            "verify_quote",
+            "search_classical_text",
+            "lookup_grammar",
+        }:
             name = "unknown"
         started = time.monotonic()
         outcome = "exception"

@@ -1,8 +1,12 @@
+from pathlib import Path
+
+import httpx
 import pytest
 from fastmcp import Client
 from fastmcp.exceptions import ToolError
 
 from korean_lit_mcp.contracts import Envelope, PassageRequest, Source
+from korean_lit_mcp.grammar import load_grammar
 from korean_lit_mcp.server import create_server
 
 
@@ -28,3 +32,24 @@ async def test_mcp_round_trip() -> None:
         with pytest.raises(ToolError) as error:
             await client.call_tool("failure", {})
         assert "private_marker" not in str(error.value)
+
+
+async def test_grammar_mcp_needs_no_model_or_upstream(monkeypatch) -> None:
+    async def no_network(*args, **kwargs):
+        raise AssertionError("Grammar lookup must not call an external service.")
+
+    monkeypatch.setattr(httpx.AsyncClient, "send", no_network)
+    server = create_server(grammar_entries=load_grammar(Path("data/grammar")))
+    async with Client(server) as client:
+        tool = next(t for t in await client.list_tools() if t.name == "lookup_grammar")
+        assert tool.annotations is not None and tool.annotations.read_only_hint
+        result = await client.call_tool(
+            "lookup_grammar", {"request": {"term": "수록하지않은문법용어", "period": "modern"}}
+        )
+        assert result.structured_content is not None
+        assert result.structured_content["items"] == []
+        found = await client.call_tool(
+            "lookup_grammar", {"request": {"term": "어간", "period": "modern"}}
+        )
+        assert found.structured_content is not None
+        assert found.structured_content["items"][0]["entry_id"] == "modern-stem"

@@ -1,6 +1,6 @@
 # 현재 진행 상태
 
-갱신일: 2026-11-01. 공개 MCP는 Vercel production에서 운영하며, main은 운영·develop은 다음 릴리스 통합 브랜치다. PR #14의 ITKC 발췌 검색은 릴리스 PR #15로 배포하고 실제 HTTP 검증을 마쳤다. PR #18의 저자 역할·검색 범위 수정은 develop에 통합했으며 아직 production에 반영하지 않았다. 내장 전문은 김유정 「동백꽃」·「봄·봄」 두 편이다. 국립중앙도서관 키는 신청 중이다.
+갱신일: 2026-11-01. 공개 MCP는 Vercel production에서 운영하며, main은 운영·develop은 다음 릴리스 통합 브랜치다. 이 문서는 develop의 구현과 단계별 검증을 기록하며 운영 반영은 릴리스 PR의 main SHA·배포 결과로 확인한다. 내장 전문은 김유정 「동백꽃」·「봄·봄」 두 편이다. 문법 개념 조회는 G-01~G-04 PR로 구현·검증한다. 국립중앙도서관 키는 신청 중이다.
 
 ## 구현과 리뷰
 
@@ -60,10 +60,18 @@ PR #18 이후 필수 검사는 pytest 104 passed / 1 skipped와 Ruff lint·forma
 
 - [PR #18](https://github.com/kingjiwoo/korean-lit-mcp/pull/18): 문헌 저자 document_author, 호환 author의 역할, 미확인 work_author=null, search_target 표시를 develop에 통합했다. 이슈 #17 재현은 합성 XML로 검사했다.
 - [PR #20](https://github.com/kingjiwoo/korean-lit-mcp/pull/20)의 [키 없는 출처 실증](decisions/0003-keyless-sources.md): 한국학자료센터 공개 문헌정보 API에서 구운몽 11건·洪吉童傳 3건·송강가사 4건을 관측했다. 목록 수이며 전문 공급 수가 아니다. Python HTTPS 연결 및 전문 API 응답이 미확인이라 커넥터는 추가하지 않았다.
-- [문법 도구 계약](GRAMMAR-TOOL-PLAN.md): 현대/중세/근대, 출처·용례·적용 범위·오류·검사 기준을 정했다. 검수 자료 확보가 남았고 문법 MCP 도구는 등록하지 않았다. 한국어기초사전 API는 별도 키가 필요하다.
+- [문법 도구 계획](GRAMMAR-TOOL-PLAN.md): PR #37의 검수 자료와 PR #38의 조회 로직을 develop에 통합했다. MCP 등록·배포 연결은 G-03, 운영 배포는 G-04에서 확인한다. 번들 조회에는 사전 API 키가 필요하지 않다.
 - README를 네 도구의 실제 지원 범위·설정·사용 예시·미지원 항목에 맞춰 갱신했다. 문서의 develop 상태와 운영 배포 상태를 구분한다.
 
 이번 후속 작업은 develop 통합까지다. 키 없는 작업 전체가 국립중앙도서관 승인에 묶인 것은 아니지만, 전문 공급·자료 재사용·새 출처 HTTPS 호환성은 별도 선행 조건이다. 사용자에게 즉시 답변이 필요한 제품 선택은 없다.
+
+## 문법 개념 조회 구현
+
+G-01 PR #37에서 현대 8·중세 2·근대 표기 1의 11개 개념과 출처·권리·별칭·예시·제한을 추가했다. G-02 PR #38에서 시대별 조회·입력/자료 검증·1MB 로딩 상한과 22개 관련 테스트를 추가했다. G-03은 `lookup_grammar` 등록·기동 시 번들 로딩·내용 없는 지표·Vercel data 번들·교사 안내·실제 HTTP 검증을 연결한다. 전체 문법 체계·문장 자동 분석·문항 정답 판정은 지원하지 않는다.
+
+Claude 사용량 한도가 확인돼 사용자 승인에 따라 별도 Codex CLI gpt-6.1-sol 읽기 전용 대체 독립 리뷰를 적용한다. 기본 교차 리뷰와 구분해 [자료 리뷰](reviews/PR-GRAMMAR-CORPUS.md)와 [조회 로직 리뷰](reviews/PR-GRAMMAR-LOOKUP.md)에 지적·수정·한계를 기록했다. 한도 복구 후 기본 방식으로 돌아간다. 제품 내부 LLM 호출·DB·새 모델/API 키는 추가하지 않는다.
+
+데이터는 [CC BY-SA 2.0 KR](../data/grammar/LICENSE.md) 조건이며 코드 MIT와 구분한다. 합성 예시와 사전의 형태 예시를 실제 문헌의 검증 인용으로 표시하지 않는다. 미수록 개념·다른 시대·근대 문법 전반·기관/교사 감수는 미지원 또는 미검증이다. 최종 통합 검사와 production SHA·공개 HTTP 결과는 G-04 릴리스 PR에 기록한다.
 
 ## 교육용 원문 확보·검증 보강 (2026-11-01)
 
