@@ -129,6 +129,10 @@ class ClassicalLibrary:
                     "title": record["기사명"],
                     "book_title": record.get("서명", ""),
                     "author": record.get("저자", ""),
+                    "document_author": record.get("저자", ""),
+                    "author_role": "source_record_author",
+                    "work_author": None,
+                    "search_target": request.target,
                     "volume": record.get("권차명", ""),
                     "snippet": record["검색필드"],
                     "is_excerpt": True,
@@ -146,5 +150,13 @@ class ClassicalLibrary:
             retrieved_at=datetime.fromisoformat(data["retrieved_at"]),
             note=f"전체 {data['total']}건 중 첫 {len(items)}건. 검색필드는 기관의 검색 발췌이며 "
             "강조 마크업이 포함될 수 있습니다. 작품 전문·검수 판본이 아니며 "
-            "get_passage의 작품 ID로 사용할 수 없습니다. 캐시 최대 5분.",
+            "get_passage의 작품 ID로 사용할 수 없습니다. "
+            "document_author는 기관 레코드의 저자이며 검색한 작품의 작가를 뜻하지 않습니다. "
+            "author는 같은 값의 호환 필드입니다. work_author는 확인되지 않아 null입니다. "
+            + (
+                "기사명 검색 결과이며 제목 일치가 작품 원문 확인을 뜻하지 않습니다. "
+                if request.target == "title"
+                else "본문 언급 검색 결과이며 작품 자체를 찾은 것이 아닙니다. "
+            )
+            + "캐시 최대 5분.",
         )

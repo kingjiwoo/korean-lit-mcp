@@ -26,7 +26,11 @@ def create_server(*, editions: tuple[Edition, ...] = (), nl_api_key: str | None 
             "인용 전 get_passage로 판본과 원문을 확보하고 작성 후 verify_quote로 검증하세요. "
             "조회한 판본과 source_hash를 검증 요청에 전달하세요. "
             "미검증 범위를 검증 완료라고 표시하지 마세요. "
-            "출처와 판본을 결과물에 표시하세요."
+            "출처와 판본을 결과물에 표시하세요. "
+            "고전 작품 찾기는 search_classical_text의 target=title로 먼저 탐색하고, "
+            "관련 기록은 target=body로 구분해 검색하세요. "
+            "document_author와 호환 필드 author는 검색 문헌의 저자이며 작품 작가가 아닙니다. "
+            "작품 원문을 확인하지 못했으면 검색 발췌·관련 기록만 찾았다고 알리세요."
         ),
         mask_error_details=True,
         middleware=[ToolMetrics()],
@@ -62,6 +66,9 @@ def create_server(*, editions: tuple[Edition, ...] = (), nl_api_key: str | None 
     async def classical_search(request: ClassicalSearchRequest) -> Envelope[dict[str, object]]:
         """한국고전종합DB에서 고전원문·문집총간·고전총간의 본문/기사명을 검색합니다.
 
+        작품 찾기는 target=title, 본문 언급 찾기는 target=body를 명시하세요.
+        기본값 body는 기존 호출 호환을 유지합니다. 제목 일치가 작품 원문 확인은 아닙니다.
+        document_author와 author는 기관 레코드 저자이며 작품 작가는 미확인입니다.
         기관 검색 발췌와 자료 링크를 반환합니다. 전문 조회나 판본 검증이 아닙니다.
         """
         try:
