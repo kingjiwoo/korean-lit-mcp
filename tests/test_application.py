@@ -1,9 +1,11 @@
 import runpy
+from pathlib import Path
 
 import pytest
 from starlette.testclient import TestClient
 
 from korean_lit_mcp.runtime import create_app_from_env
+from korean_lit_mcp.sources import SourceError
 
 REQUEST = {"jsonrpc": "2.0", "id": 1, "method": "tools/list", "params": {}}
 HEADERS = {"Accept": "application/json, text/event-stream"}
@@ -91,3 +93,38 @@ def test_vercel_entrypoint_loads_reviewed_texts(monkeypatch) -> None:
         assert passage["work_id"] == "gongu-9000397"
         assert passage["paragraphs"][0]["text"]
         assert passage["source_hash"]
+
+
+def test_vercel_entrypoint_loads_grammar(monkeypatch) -> None:
+    monkeypatch.setenv("VERCEL_URL", "deployment.example")
+    entrypoint = runpy.run_path("app.py")["app"]
+    with TestClient(entrypoint, base_url="https://deployment.example") as client:
+        response = client.post(
+            "/mcp",
+            headers=HEADERS,
+            json={
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "tools/call",
+                "params": {
+                    "name": "lookup_grammar",
+                    "arguments": {"request": {"term": "어간", "period": "modern"}},
+                },
+            },
+        )
+        assert response.status_code == 200
+        item = response.json()["result"]["structuredContent"]["items"][0]
+        assert item["entry_id"] == "modern-stem"
+        assert item["sources"][0]["license"] == "CC-BY-SA-2.0-KR"
+
+
+@pytest.mark.parametrize("broken_json", [False, True])
+def test_missing_or_broken_grammar_prevents_startup(monkeypatch, tmp_path, broken_json) -> None:
+    monkeypatch.setenv("WORKS_DIR", str(Path("data/works").resolve()))
+    monkeypatch.chdir(tmp_path)
+    if broken_json:
+        directory = tmp_path / "data/grammar"
+        directory.mkdir(parents=True)
+        (directory / "entries.json").write_text("{broken")
+    with pytest.raises(SourceError, match="문법"):
+        create_app_from_env()

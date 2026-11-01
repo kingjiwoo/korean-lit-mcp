@@ -12,13 +12,19 @@ from korean_lit_mcp.contracts import (
     Source,
     VerifyRequest,
 )
+from korean_lit_mcp.grammar import GrammarEntry, GrammarRequest, lookup_grammar
 from korean_lit_mcp.metrics import ToolMetrics
 from korean_lit_mcp.passages import get_passage, search_works
 from korean_lit_mcp.sources import Edition, SourceError
 from korean_lit_mcp.verification import VerificationResult, verify_quote
 
 
-def create_server(*, editions: tuple[Edition, ...] = (), nl_api_key: str | None = None) -> FastMCP:
+def create_server(
+    *,
+    editions: tuple[Edition, ...] = (),
+    nl_api_key: str | None = None,
+    grammar_entries: tuple[GrammarEntry, ...] = (),
+) -> FastMCP:
     catalogue = NationalLibrary(nl_api_key) if nl_api_key else None
     classical = ClassicalLibrary()
     server = FastMCP(
@@ -38,7 +44,9 @@ def create_server(*, editions: tuple[Edition, ...] = (), nl_api_key: str | None 
             "모델 기억이나 추정으로 누락된 옛한글·원문을 복원하지 마세요. "
             "자료 작성은 클라이언트에서 하고, 모든 지문·해설 인용을 제출해 대조한 후 "
             "수정한 인용을 재검증하세요. "
-            "제공 본문과의 일치는 정본 인증이나 문항 정답 검증이 아닙니다."
+            "제공 본문과의 일치는 정본 인증이나 문항 정답 검증이 아닙니다. "
+            "문법 개념은 lookup_grammar에 시대를 명시해 조회하고 출처·예시 종류·한계를 확인하세요. "
+            "개념 조회를 임의 문장 분석이나 문항 정답 검증으로 표시하지 마세요."
         ),
         mask_error_details=True,
         middleware=[ToolMetrics()],
@@ -123,5 +131,17 @@ def create_server(*, editions: tuple[Edition, ...] = (), nl_api_key: str | None 
         제출·추출한 인용만 대조하며 문학 해석·문항 정답·초안 전체를 검증하지 않습니다.
         """
         return verify_quote(request, editions)
+
+    @server.tool(name="lookup_grammar", annotations={"readOnlyHint": True})
+    def grammar(request: GrammarRequest) -> Envelope[dict[str, object]]:
+        """현대·중세·근대의 검수된 문법 개념·별칭·예시·출처를 조회합니다.
+
+        period는 modern, middle, early_modern 중 하나를 명시하세요.
+        초기 수록은 현대 8·중세 2·근대 표기 1항목이며 전체 문법 체계가 아닙니다.
+        예시 종류와 CC BY-SA 이용조건을 확인하세요. 사전 형태 예시는 문헌 인용문이 아닙니다.
+        미검색은 해당 시대 검수 항목의 미수록입니다. 다른 시대나 추정 설명으로 대체하지 마세요.
+        임의 문장 분석·시험 정답 검증은 수행하지 않습니다.
+        """
+        return lookup_grammar(request, grammar_entries)
 
     return server
