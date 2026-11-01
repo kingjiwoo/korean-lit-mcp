@@ -218,6 +218,10 @@ node_modules/
 !.env.example
 .vercel/
 
+# Local agent skills and settings
+/.agents/
+/.claude/
+
 # Marimo
 marimo/_static/
 marimo/_lsp/

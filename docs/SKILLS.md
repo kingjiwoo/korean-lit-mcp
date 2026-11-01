@@ -34,9 +34,11 @@
 
 ## 스킬 추가 규칙
 
-반복 작업이 두 번 이상 발생하고 실수 가능성이 있으면 스킬 후보로 등록합니다. 실제 실행 스킬은 `.agents/skills/<name>/SKILL.md`에 두고 `.claude/skills/<name>`에서 같은 폴더를 연결합니다. 초안과 설명 문서만 있는 경우 실제 등록된 스킬로 표시하지 않습니다.
+반복 작업이 두 번 이상 발생하고 실수 가능성이 있으면 스킬 후보로 등록합니다. 로컬 실행 스킬은 `.agents/skills/<name>/SKILL.md`에 두고 `.claude/skills/<name>`에서 같은 폴더를 연결합니다. 두 폴더는 `.gitignore`로 제외하며 스킬·설정·링크를 Git에 추가하지 않습니다. 초안과 설명 문서만 있는 경우 실제 등록된 스킬로 표시하지 않습니다.
 
-현재 등록한 `check-project`는 Python·Markdown 필수 검사를 실행하고 외부 검증의 한계를 보고하는 절차입니다. Codex의 `$check-project`와 Claude의 `/check-project`에서 사용합니다. 두 경로가 같은 원본을 읽는지 확인하고, 연결이 지원되지 않는 환경에서는 `AGENTS.md`의 명령을 직접 실행합니다.
+로컬에 설치한 `check-project`는 Python·Markdown 필수 검사를 실행하고 외부 검증의 한계를 보고하는 절차입니다. Codex의 `$check-project`와 Claude의 `/check-project`에서 사용합니다. 두 경로가 같은 원본을 읽는지 확인하고, 스킬이 없거나 연결이 지원되지 않는 환경에서는 `AGENTS.md`의 명령을 직접 실행합니다.
+
+새 clone에는 로컬 스킬이 포함되지 않습니다. 기존 clone에 추적 해제 커밋을 반영할 때는 스킬과 링크를 `.local/agent-skills-backup/`처럼 Git에서 제외한 별도 위치에 백업한 뒤 필요하면 원래 경로에 복원합니다. 로컬 스킬은 공통 Markdown 검사에서도 제외하며, CI는 스킬 설치 없이 `AGENTS.md`의 명령을 실행합니다. 이 정책은 최신 브랜치의 추적을 해제하며 과거 커밋 이력을 삭제하지 않습니다.
 
 스킬을 만들 때는 아래 형식을 사용합니다.
 

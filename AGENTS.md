@@ -41,8 +41,8 @@ DB는 도입하지 않고 공개 API 데이터만 메모리 캐시로 처리합�
 공개 MCP는 로그인·사용자 토큰 없이 URL로 연결합니다. 기관 API 키는 선택 기능을 위한 서버 비밀값이며 사용자에게 전달하지 않습니다.
 원문 파일에는 자동 포맷을 적용하지 않습니다.
 
-프로젝트 스킬 `check-project`의 원본은 `.agents/skills/check-project/SKILL.md`입니다.
-Claude 진입점은 같은 파일을 가리키는 `.claude/skills/check-project` 링크입니다.
+`.agents/`와 `.claude/`는 로컬 전용이며 Git에 추가하지 않습니다. 스킬 파일과 링크는 새 clone에 포함되지 않습니다.
+로컬에 `check-project`를 설치한 경우 원본은 `.agents/skills/check-project/SKILL.md`, Claude 진입점은 이를 가리키는 `.claude/skills/check-project` 링크입니다. 스킬이 없어도 위 필수 검사 명령을 직접 실행합니다.
 
 ## 작업 보고
 
