@@ -452,3 +452,14 @@ PR 12의 요청 입력은 `query`, 제한된 `collection`(`classic`, `anthology`
 | README·진행 상태 | `docs/current-capabilities` (이번 README 정리 PR) | 현재 동작 기능·설정·예시·미지원 범위·남은 외부 조건을 일치시키고 develop 통합 |
 
 [키 없는 출처 실증](decisions/0003-keyless-sources.md)에서 한국학자료센터 문헌 목록은 확인했지만 Python HTTPS 연결과 전문 공급을 확인하지 못했다. 검색 커넥터를 검증 완료로 추가하지 않는다. [문법 도구 계약](GRAMMAR-TOOL-PLAN.md)은 확정했지만 재사용 가능한 검수 항목이 없어 새 문법 도구를 등록하지 않는다. 국립중앙도서관 키 대기와 이 두 조건은 서로 별개다.
+
+## 15. 교육용 원문 확보·검증 보강
+
+이슈 [#32](https://github.com/kingjiwoo/korean-lit-mcp/issues/32)의 후속 PR을 분리한다.
+
+| 이슈 | 범위 | 상태 |
+| --- | --- | --- |
+| #28 PR-A | 검수 이칭·귀속 메타데이터, 검색 레코드와 작품 후보 분리 | 구현·로컬 검사 완료, Claude 사용량 제한으로 교차 리뷰 대기. [계약과 근거](decisions/0004-classical-identity.md) |
+| #31 PR-D | 실제 검색어·목록 범위, 원문 미확보 안내, 교사 본문 대조 흐름 | 다음 PR, 키 불필요 |
+| #29 PR-B | NL 실제 서지·링크·전문 경로 검증 | 키 발급 대기 |
+| #30 PR-C | 검수 고전 원문 공급 | 출처·판본·재사용 조건 확보 필요 |
