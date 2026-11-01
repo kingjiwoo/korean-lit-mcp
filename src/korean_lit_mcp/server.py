@@ -2,7 +2,7 @@ from fastmcp import FastMCP
 
 from korean_lit_mcp.catalogue import SOURCE, NationalLibrary
 from korean_lit_mcp.classical import SOURCE as ITKC_SOURCE
-from korean_lit_mcp.classical import ClassicalLibrary, ClassicalSearchRequest
+from korean_lit_mcp.classical import ClassicalLibrary, ClassicalSearchRequest, ClassicalSearchResult
 from korean_lit_mcp.contracts import (
     Envelope,
     ErrorInfo,
@@ -63,18 +63,20 @@ def create_server(*, editions: tuple[Edition, ...] = (), nl_api_key: str | None 
         return local
 
     @server.tool(name="search_classical_text", annotations={"readOnlyHint": True})
-    async def classical_search(request: ClassicalSearchRequest) -> Envelope[dict[str, object]]:
+    async def classical_search(request: ClassicalSearchRequest) -> ClassicalSearchResult:
         """한국고전종합DB에서 고전원문·문집총간·고전총간의 본문/기사명을 검색합니다.
 
         작품 찾기는 target=title, 본문 언급 찾기는 target=body를 명시하세요.
         기본값 body는 기존 호출 호환을 유지합니다. 제목 일치가 작품 원문 확인은 아닙니다.
         document_author와 author는 기관 레코드 저자이며 작품 작가는 미확인입니다.
+        work_candidates는 검수 이칭의 참고 정보이고 match_kind는 문자열 비교 분류입니다.
+        identity_status는 미확인입니다. 제목 후보도 작품·작가·판본 확정이 아닙니다.
         기관 검색 발췌와 자료 링크를 반환합니다. 전문 조회나 판본 검증이 아닙니다.
         """
         try:
             return await classical.search(request)
         except SourceError as error:
-            return Envelope(
+            return ClassicalSearchResult(
                 source=ITKC_SOURCE, error=ErrorInfo(code=error.code, message=str(error))
             )
 

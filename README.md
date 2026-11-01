@@ -29,6 +29,8 @@ Claude의 원격 MCP 커넥터에 URL을 등록합니다. 사용자 회원가입
 
 `document_author`와 호환 필드 `author`는 **검색 문헌 레코드의 저자**입니다. 작품 작가는 확인되지 않아 `work_author=null`로 표시합니다. 예컨대 사미인곡 검색에서 임하필기의 이유원이 나오더라도 정철의 작품 작가를 뜻하지 않습니다. 기사명이 같아도 해당 작품 원문임을 보장하지 않습니다.
 
+`work_candidates`는 규원가·사미인곡·홍길동전의 검수 이칭에 대응하는 참고 정보입니다. `match_kind`로 제목 후보·본문 문자열 언급·이칭 불일치·미분류를 구분하지만 레코드의 작품 동일성은 항상 미확인입니다. 귀속 이견과 근거는 [식별 계약](docs/decisions/0004-classical-identity.md)에 기록합니다. 이 기능은 원문 제공 범위를 늘리지 않습니다.
+
 결과는 `is_excerpt=true`, `available_text=false`인 검색 발췌입니다. 강조 마크업이 포함될 수 있고, 결과의 `record_id`를 `get_passage`의 작품 ID로 사용할 수 없습니다. 출처·판본·검사 범위 확인은 [교사 안내](docs/TEACHER-GUIDE.md)를 참고하세요.
 
 ## 로컬 실행과 운영 설정
