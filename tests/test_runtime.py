@@ -25,6 +25,7 @@ def test_public_tools_do_not_require_login() -> None:
         assert response.status_code == 200
         assert {t["name"] for t in response.json()["result"]["tools"]} == {
             "search_works",
+            "search_classical_text",
             "get_passage",
             "verify_quote",
         }

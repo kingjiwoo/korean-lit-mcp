@@ -1,6 +1,8 @@
 from fastmcp import FastMCP
 
 from korean_lit_mcp.catalogue import SOURCE, NationalLibrary
+from korean_lit_mcp.classical import SOURCE as ITKC_SOURCE
+from korean_lit_mcp.classical import ClassicalLibrary, ClassicalSearchRequest
 from korean_lit_mcp.contracts import (
     Envelope,
     ErrorInfo,
@@ -17,6 +19,7 @@ from korean_lit_mcp.verification import VerificationResult, verify_quote
 
 def create_server(*, editions: tuple[Edition, ...] = (), nl_api_key: str | None = None) -> FastMCP:
     catalogue = NationalLibrary(nl_api_key) if nl_api_key else None
+    classical = ClassicalLibrary()
     server = FastMCP(
         "korean-lit-mcp",
         instructions=(
@@ -54,6 +57,19 @@ def create_server(*, editions: tuple[Edition, ...] = (), nl_api_key: str | None 
         local.retrieved_at = min(local.retrieved_at, remote.retrieved_at)
         local.note += " " + remote.note
         return local
+
+    @server.tool(name="search_classical_text", annotations={"readOnlyHint": True})
+    async def classical_search(request: ClassicalSearchRequest) -> Envelope[dict[str, object]]:
+        """한국고전종합DB에서 고전원문·문집총간·고전총간의 본문/기사명을 검색합니다.
+
+        기관 검색 발췌와 자료 링크를 반환합니다. 전문 조회나 판본 검증이 아닙니다.
+        """
+        try:
+            return await classical.search(request)
+        except SourceError as error:
+            return Envelope(
+                source=ITKC_SOURCE, error=ErrorInfo(code=error.code, message=str(error))
+            )
 
     @server.tool(name="get_passage", annotations={"readOnlyHint": True})
     def passage(request: PassageRequest) -> Envelope[dict[str, object]]:

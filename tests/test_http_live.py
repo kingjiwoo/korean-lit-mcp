@@ -34,6 +34,7 @@ async def test_live_http_workflow() -> None:
     async with Client(URL) as client:
         assert {tool.name for tool in await client.list_tools()} == {
             "search_works",
+            "search_classical_text",
             "get_passage",
             "verify_quote",
         }
