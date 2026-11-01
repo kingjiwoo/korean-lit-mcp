@@ -11,6 +11,7 @@ from pathlib import Path
 from starlette.responses import JSONResponse
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
+from korean_lit_mcp.grammar import GrammarEntry, load_grammar
 from korean_lit_mcp.metrics import request_id
 from korean_lit_mcp.server import create_server
 from korean_lit_mcp.sources import Edition, load_editions
@@ -115,10 +116,13 @@ def create_http_app(
     allowed_hosts: list[str],
     allowed_origins: list[str] | None = None,
     nl_api_key: str | None = None,
+    grammar_entries: tuple[GrammarEntry, ...] = (),
 ) -> Guard:
     if not allowed_hosts or "*" in allowed_hosts:
         raise ValueError("Explicit MCP_ALLOWED_HOSTS are required.")
-    server = create_server(editions=editions, nl_api_key=nl_api_key)
+    server = create_server(
+        editions=editions, nl_api_key=nl_api_key, grammar_entries=grammar_entries
+    )
     app = server.http_app(
         json_response=True,
         stateless_http=True,
@@ -146,6 +150,7 @@ def create_app_from_env() -> Guard:
         )
     app = create_http_app(
         editions=load_editions(Path(os.environ.get("WORKS_DIR", "data/works"))),
+        grammar_entries=load_grammar(Path("data/grammar")),
         allowed_hosts=[host.strip() for host in hosts.split(",") if host.strip()],
         allowed_origins=[
             origin.strip()

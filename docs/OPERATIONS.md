@@ -34,7 +34,9 @@ MCP 주소는 `http://127.0.0.1:8000/mcp`, 헬스체크는 `/health`입니다. �
 
 운영 MCP 주소는 `https://korean-lit-mcp.vercel.app/mcp`, 헬스체크는 `https://korean-lit-mcp.vercel.app/health`입니다. 프로젝트 이름은 `korean-lit-mcp`이며 GitHub 저장소에 연결했습니다. `main`은 production, 작업 브랜치는 preview로 배포합니다.
 
-Vercel은 `app.py`의 ASGI `app`을 불러옵니다. CLI·컨테이너와 같은 환경설정 함수를 사용하고, Python 3.13·의존성은 `.python-version`·`uv.lock`으로 고정합니다. `vercel.json`은 함수 실행을 최대 60초로 제한하며 원문 파일을 포함합니다. `.vercelignore`는 로컬 환경변수·인증 파일·개발 자료의 업로드를 제외합니다.
+Vercel은 `app.py`의 ASGI `app`을 불러옵니다. CLI·컨테이너와 같은 환경설정 함수를 사용하고, Python 3.13·의존성은 `.python-version`·`uv.lock`으로 고정합니다. `vercel.json`은 함수 실행을 최대 60초로 제한하며 `data/**`의 원문·문법 자료와 이용조건을 포함합니다. `.vercelignore`는 로컬 환경변수·인증 파일·개발 자료의 업로드를 제외합니다.
+
+문법 자료는 기동 시 `data/grammar/entries.json`에서 읽습니다. 추가 API 키·LLM·DB가 필요하지 않으며 누락·형식/출처/권리 오류·1MB 초과 자료는 기동 실패로 드러납니다. 초기 수록은 현대 8·중세 2·근대 표기 1항목입니다. 자료를 수정하면 출처·이용조건·버전과 관련 검증도 갱신합니다. 문법 조회의 정상 미검색을 자료 로딩 실패와 혼동하지 않습니다.
 
 Vercel의 시스템 환경변수 자동 노출을 켭니다. `MCP_ALLOWED_HOSTS`가 없으면 `VERCEL_URL`, `VERCEL_BRANCH_URL`, `VERCEL_PROJECT_PRODUCTION_URL`을 허용합니다. 로컬 `.env.example`의 localhost 값을 Vercel에 복사하지 않습니다. 별도로 값을 지정하면 시스템 도메인 대신 그 목록만 허용합니다. `NL_API_KEY`는 승인 후 서버 환경에만 추가하며 새 배포부터 적용됩니다.
 
@@ -72,8 +74,8 @@ Origin이 없는 서버 간 클라이언트는 허용합니다. 브라우저가 
 
 Vercel에서는 검증한 소스와 잠금 파일·원문 버전으로 `main`을 배포하고 deployment ID·Git SHA를 기록합니다. 컨테이너 배포를 사용하는 환경에서는 검증한 이미지 digest를 승격합니다. 기관 키는 환경마다 분리하고 배포는 환경별로 직렬화합니다.
 
-배포 후 `/health`, 무인증 세 도구 목록·원문 조회·검증 성공, 잘못된 Host·Origin 거부와 입력·호출 제한을 확인합니다. 실패하면 확인된 이전 Vercel production 배포와 환경 설정으로 롤백하고 핵심 호출을 다시 확인합니다. 컨테이너는 이전 이미지 digest로 되돌립니다. 인증이 있던 버전으로 롤백하면 사용자 연결에 다시 토큰이 필요할 수 있습니다. DB 마이그레이션은 없습니다.
+배포 후 `/health`, 무인증 다섯 도구 목록·원문 조회·인용 검증·세 시대의 문법 조회·미검색·잘못된 입력 거부를 확인합니다. `tests/test_http_live.py`는 이 흐름을 검증합니다. 고전 검색 성공은 `ITKC_API_URL` 설정과 별도 실제 호출로 확인합니다. 잘못된 Host·Origin 거부와 입력·호출 제한도 유지합니다. 실패하면 확인된 이전 Vercel production 배포와 환경 설정으로 롤백하고 핵심 호출을 다시 확인합니다. 컨테이너는 이전 이미지 digest로 되돌립니다. 인증이 있던 버전으로 롤백하면 사용자 연결에 다시 토큰이 필요할 수 있습니다. DB 마이그레이션은 없습니다.
 
 Vercel 인스턴스 메모리와 임시 파일의 영속성에 의존하지 않습니다. 원문 파일은 빌드 산출물에 포함하고 교사 입력·초안은 계속 저장하지 않습니다.
 
-한국고전 검색을 활성화하려면 운영자가 `ITKC_API_URL`에 공식 호출 규칙의 검색 요청 URL을 HTTPS로 설정합니다. 코드에는 호출 주소 기본값을 두지 않습니다. `.env` 자동 로딩은 하지 않습니다. 현재 작업은 develop 통합까지이며 Vercel 환경변수 설정과 production 배포는 별도입니다.
+한국고전 검색을 활성화하려면 운영자가 `ITKC_API_URL`에 공식 호출 규칙의 검색 요청 URL을 HTTPS로 설정합니다. 코드에는 호출 주소 기본값을 두지 않습니다. `.env` 자동 로딩은 하지 않습니다. 문법 번들 조회에는 이 설정이 필요하지 않습니다. 실제 운영 환경 설정과 production 반영 여부는 릴리스 PR의 검증 기록으로 확인합니다.
