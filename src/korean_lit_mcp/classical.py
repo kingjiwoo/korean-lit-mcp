@@ -12,8 +12,9 @@ import httpx
 from pydantic import Field, HttpUrl
 
 from korean_lit_mcp.cache import CacheBusy, PublicCache
-from korean_lit_mcp.contracts import Envelope, Input, Source, Text
+from korean_lit_mcp.contracts import Envelope, Input, SearchContext, Source, Text
 from korean_lit_mcp.sources import SourceError
+from korean_lit_mcp.work_identity import WorkIdentity, classify_record, find_candidates
 
 SOURCE = Source(name="한국고전종합DB", url=HttpUrl("https://db.itkc.or.kr/etc/openAPI?type=page1"))
 
@@ -23,6 +24,10 @@ class ClassicalSearchRequest(Input):
     collection: Literal["classic", "anthology", "corpus"] = "classic"
     target: Literal["body", "title"] = "body"
     limit: int = Field(default=10, ge=1, le=20)
+
+
+class ClassicalSearchResult(Envelope[dict[str, object]]):
+    work_candidates: list[WorkIdentity] = Field(default_factory=list)
 
 
 def parse_response(raw: bytes) -> tuple[list[dict[str, str]], int]:
@@ -67,7 +72,7 @@ class ClassicalLibrary:
         self.cache = PublicCache()
         logging.getLogger("httpx").setLevel(logging.WARNING)
 
-    async def search(self, request: ClassicalSearchRequest) -> Envelope[dict[str, object]]:
+    async def search(self, request: ClassicalSearchRequest) -> ClassicalSearchResult:
         endpoint = self.endpoint
         if not endpoint:
             raise SourceError("upstream_not_configured", "ITKC_API_URL 설정이 필요합니다.")
@@ -121,10 +126,13 @@ class ClassicalLibrary:
                 "upstream_busy", "기관 검색이 지연되고 있습니다. 재시도하세요."
             ) from error
         data = json.loads(raw)
+        candidates = find_candidates(request.query)
         items: list[dict[str, object]] = []
         for record in data["records"]:
             items.append(
                 {
+                    "match_kind": classify_record(record["기사명"], record["검색필드"], candidates),
+                    "identity_status": "unconfirmed",
                     "record_id": record["자료ID"],
                     "title": record["기사명"],
                     "book_title": record.get("서명", ""),
@@ -144,9 +152,15 @@ class ClassicalLibrary:
                     "source": SOURCE.model_dump(mode="json"),
                 }
             )
-        return Envelope(
+        return ClassicalSearchResult(
             items=items,
+            work_candidates=candidates,
             source=SOURCE,
+            search_context=SearchContext(
+                request=request.model_dump(mode="json"),
+                scope="itkc",
+                outcome="related_records" if items else "no_matches",
+            ),
             retrieved_at=datetime.fromisoformat(data["retrieved_at"]),
             note=f"전체 {data['total']}건 중 첫 {len(items)}건. 검색필드는 기관의 검색 발췌이며 "
             "강조 마크업이 포함될 수 있습니다. 작품 전문·검수 판본이 아니며 "
@@ -158,5 +172,12 @@ class ClassicalLibrary:
                 if request.target == "title"
                 else "본문 언급 검색 결과이며 작품 자체를 찾은 것이 아닙니다. "
             )
-            + "캐시 최대 5분.",
+            + "work_candidates는 검색어에 대한 참고 메타데이터이며 "
+            "레코드·판본 식별 확정이 아닙니다. "
+            "title_candidate는 제목 후보, body_mention은 문자열 언급, "
+            "unconfirmed_search_match는 알려진 이칭과 불일치, unclassified는 미등록 검색어입니다. "
+            "동음 한자·동명이작을 자동 결합하지 않습니다. "
+            "현재 검색 범위의 결과이며 전체 자료원 미수록을 뜻하지 않습니다. "
+            "원문 미확보 시 확인한 판본이나 교사 제공 본문으로 대조하세요. "
+            "모델 기억·추정 복원을 원문으로 사용하지 마세요. 캐시 최대 5분.",
         )
