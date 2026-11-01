@@ -29,9 +29,9 @@
 
 작업 브랜치 → `develop`은 PR당 하나의 변경으로 squash merge합니다. `develop` → `main` 릴리스는 merge commit으로 통합해 두 장기 브랜치의 공통 이력을 유지합니다. 릴리스 후 `main`을 `develop`에 병합해 동기화하고, hotfix도 같은 방식으로 전파합니다. 동일 수정을 별도로 cherry-pick한 뒤 다시 병합하지 않습니다. [GitHub의 PR 병합 방식](https://docs.github.com/en/pull-requests/reference/pull-request-merges)
 
-브랜치 보호는 `main`·`develop`에 PR과 필수 검사를 요구하도록 설정합니다. 혼자 작업할 때는 작성자가 자기 PR을 승인할 수 없다는 점을 고려해 리뷰 승인 수를 필수로 고정하지 않습니다. 실제 설정 여부는 저장소에서 확인합니다.
+브랜치 보호는 `main`·`develop`에 PR과 필수 검사를 요구합니다. 운영 배포 권한은 저장소 쓰기 권한과 Vercel 프로젝트 권한으로 통제합니다. GitHub 저장소 collaborator는 운영자가 승인한 사람만 유지하며, Vercel 프로젝트 멤버도 최소화합니다. 공개 저장소의 fork와 PR은 허용하지만, PR만으로 원본 코드나 배포가 변경되지는 않습니다.
 
-2026-10-27에 실제 보호 규칙을 적용했습니다. `develop`은 `python`·`markdown`, `main`은 여기에 `container` 검사를 필수로 둡니다. 관리자에게도 규칙을 적용하고 force-push·삭제를 금지하며 필수 승인 수는 0입니다. 2026-11-01에 PR #1~#10을 `develop`에 통합했습니다. 코드 검증과 실제 배포 검증은 별도로 기록합니다.
+2026-10-27에 실제 보호 규칙을 적용했고 2026-11-01에 확인했습니다. `develop`은 `python`·`markdown`, `main`은 여기에 `container` 검사를 필수로 둡니다. 관리자에게도 규칙을 적용하고 force-push·삭제를 금지합니다. 승인 수는 0으로 두어 1인 운영자의 릴리스를 막지 않습니다. 따라서 이 규칙은 PR·CI 절차를 강제하지만 운영자 본인의 병합을 막는 2인 승인을 제공하지 않습니다. 원본 저장소의 쓰기 collaborator는 운영자 본인만 등록된 것을 확인했습니다. PR #1~#10은 `develop`에 통합했고 코드 검증과 실제 배포 검증은 별도로 기록합니다.
 
 초기 구현은 스택 PR로 검토합니다. 부모 PR을 `develop`에 통합한 뒤 다음 PR의 대상을 `develop`으로 바꾸고, 최신 `develop`을 해당 작업 브랜치에 정상 병합·push해 검사합니다. squash 이력을 맞추기 위해 공유 브랜치의 이력을 강제로 덮어쓰지 않습니다.
 

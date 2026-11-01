@@ -1,6 +1,6 @@
 # 현재 진행 상태
 
-갱신일: 2026-11-01. SQLite·ORM·별도 캐시 서버 없이 파일 원문과 메모리 TTL 캐시로 구현했다. PR #1~#10은 CI를 재확인하고 `develop`에 모두 squash 병합했다. Vercel ASGI 설정과 공개 URL의 실제 MCP 호출도 검증했다. `develop`은 통합 브랜치, `main`은 Vercel production 브랜치다.
+갱신일: 2026-11-01. SQLite·ORM·별도 캐시 서버 없이 파일 원문과 메모리 TTL 캐시로 구현했다. PR #1~#10은 CI를 재확인하고 `develop`에 모두 squash 병합했다. Vercel ASGI 설정과 공개 URL의 실제 MCP 호출도 검증했다. `develop`은 통합 브랜치, `main`은 Vercel production 브랜치다. 현재 제공 원문은 김유정 작품 2편이며, 고전문학·고전시가 확장은 PR 11~16 계획으로 추가했다. 국립중앙도서관 API 키는 신청 중이다.
 
 ## 구현과 리뷰
 
@@ -18,6 +18,8 @@ PR 00~09는 Codex가 책임지고 Claude Code의 실제 응답 모델 `claude-op
 | PR 07 | `feature/remote-operation` | [#8](https://github.com/kingjiwoo/korean-lit-mcp/pull/8) | 인증·HTTP 제한·비루트 컨테이너 검증 |
 | PR 08 | `chore/pilot-deployment` | [#9](https://github.com/kingjiwoo/korean-lit-mcp/pull/9) | Python·Markdown·컨테이너 CI 통과, 원격 배포·교사 실증 대기 |
 | PR 09 | `feature/public-access` | [#10](https://github.com/kingjiwoo/korean-lit-mcp/pull/10) | 사용자 인증 제거·공개 연결 안내, Opus·ponytail 리뷰와 로컬 75개 테스트 통과 |
+
+고전문학·고전시가의 공식 API와 이용조건 조사, 검색·원문 연결 및 문법 도구 계획은 [작업 계획 13절](IMPLEMENTATION-PLAN.md#13-고전문학고전시가-지원-계획)에 기록했다. 국립중앙도서관 API 키는 신청 중이며, 발급 뒤 실제 응답을 검증한다. 한국고전종합DB는 키 없이 실제 GO_BD·MO_BD·MO_GS 응답을 확인했다. 검색 발췌 도구를 구현했으며, 전문 조회 경로와 현대 편집·번역 자료 이용조건은 추가 확인이 필요하다.
 
 초기 스택 PR은 부모를 통합한 뒤 자식을 `develop` 대상으로 바꾸고 최신 이력을 병합했다. 원래 검토한 파일 내용이 유지되는지 확인한 뒤 새 커밋의 CI를 다시 통과시켰다. 실제 배포·교사 실증이 남았다는 이유만으로 코드 검증을 마친 작업 PR을 Draft에 묶어두지 않는다.
 
@@ -47,3 +49,7 @@ PR 00~09는 Codex가 책임지고 Claude Code의 실제 응답 모델 `claude-op
 초기 공유 Bearer 토큰은 사용자의 공개 운영 결정으로 제거했다. 사용자에게 토큰·회원가입을 요구하지 않는다. `NL_API_KEY`는 외부 서지 검색을 사용할 때 운영 서버에만 선택적으로 설정하며, 생략해도 내장 원문·검증 도구는 동작한다. 공개 호출량은 프로세스 전체에서 공유하며 운영 플랫폼의 추가 요청량·비용 제한은 배포 시 확인한다.
 
 공개 주소는 `https://korean-lit-mcp.vercel.app/mcp`다. 최종 릴리스와 production 배포 검증, 실제 교사 사용 여부를 별도로 기록하며 어느 하나의 성공으로 다른 항목을 완료 처리하지 않는다.
+
+## 고전 검색 확장 진행
+
+`search_classical_text` 도구를 추가했다. 고전원문·한국문집총간·한국고전총간의 본문 및 기사명 검색을 지원하고, 운영자가 `ITKC_API_URL`을 설정한다. API 키·회원가입 없이 공식 검색 API와 새 클라이언트의 실제 호출을 확인했다. 전문 공급과 문법 분석은 구현되지 않았고, 상세 API·근거자료 확보가 남았다. 이 도구가 모든 국문 시가·소설을 지원한다고 표시하지 않는다. 후속 단계별 진행 상태는 [조사 기록](decisions/0002-itkc-search.md)을 따른다.
