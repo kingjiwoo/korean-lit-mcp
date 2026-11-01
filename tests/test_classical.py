@@ -190,3 +190,51 @@ async def test_missing_record_author_stays_unknown():
     item = (await library.search(ClassicalSearchRequest(query="Test"))).items[0]
     assert item["document_author"] == item["author"] == ""
     assert item["work_author"] is None
+
+
+@pytest.mark.parametrize(
+    "query,title,snippet,kind",
+    [
+        ("규원가", "九原可", "九原可", "unconfirmed_search_match"),
+        ("사미인곡", "思美人曲", "思美人曲", "title_candidate"),
+        ("사미인곡", "합성 기사", '정철의 <em class="hl1">思美人曲</em>', "body_mention"),
+        ("홍길동전", "洪吉童傳", "합성 발췌", "title_candidate"),
+        ("홍길동젼", "홍길동전", "합성 발췌", "title_candidate"),
+        ("洪吉童傳", "홍길동젼", "합성 발췌", "title_candidate"),
+        ("미등록 합성 제목", "미등록 합성 제목", "합성 발췌", "unclassified"),
+    ],
+)
+async def test_identity_is_only_a_discovery_candidate(query, title, snippet, kind):
+    from xml.sax.saxutils import escape
+
+    raw = XML.replace(b">Test<", f">{escape(title)}<".encode()).replace(
+        b"A &lt;em&gt;B&lt;/em&gt;", escape(snippet).encode()
+    )
+    library = ClassicalLibrary(
+        transport=httpx.MockTransport(lambda r: httpx.Response(200, content=raw))
+    )
+
+    original_search = library.search
+
+    async def search(self, request):
+        return await original_search(request)
+
+    # Check actual MCP serialization, including the new envelope fields.
+    with pytest.MonkeyPatch.context() as patch:
+        patch.setattr(ClassicalLibrary, "search", search)
+        async with Client(create_server()) as client:
+            response = await client.call_tool(
+                "search_classical_text", {"request": {"query": query, "target": "title"}}
+            )
+    result = response.structured_content
+    item = result["items"][0]
+    assert item["match_kind"] == kind
+    assert item["identity_status"] == "unconfirmed"
+    assert item["work_author"] is None
+    assert item["available_text"] is False
+    assert item["snippet"] == snippet
+    assert bool(result["work_candidates"]) == (kind != "unclassified")
+    if query == "규원가":
+        candidate = result["work_candidates"][0]
+        assert "이견" in candidate["attribution"]
+        assert candidate["reference"].endswith("E0007270")

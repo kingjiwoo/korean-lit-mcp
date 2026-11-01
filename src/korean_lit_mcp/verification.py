@@ -34,6 +34,7 @@ class QuoteResult(BaseModel):
 
 
 class VerificationResult(Envelope[QuoteResult]):
+    reference_basis: Literal["reviewed_edition", "supplied_text"]
     coverage: Literal["submitted_quotes", "supported_draft_regions"] = "submitted_quotes"
     checked_count: int = 0
     all_submitted_exact: bool = False
@@ -154,6 +155,12 @@ def verify_quote(request: VerifyRequest, editions: tuple[Edition, ...] = ()) -> 
     coverage: Literal["submitted_quotes", "supported_draft_regions"] = (
         "supported_draft_regions" if request.draft is not None else "submitted_quotes"
     )
+    reference_basis: Literal["reviewed_edition", "supplied_text"] = (
+        "supplied_text" if request.source_text is not None else "reviewed_edition"
+    )
+    limits = " 문학 해석·문항 정답·미제출 인용은 검증하지 않습니다."
+    if reference_basis == "supplied_text":
+        limits += " 제공 문자열과의 대조이며 정본·출처·다른 판본의 동일성을 인증하지 않습니다."
     source = Source(name="교사 제공 텍스트")
     rights: Literal["public_domain", "protected", "unknown"] = "unknown"
     text = request.source_text
@@ -173,8 +180,9 @@ def verify_quote(request: VerifyRequest, editions: tuple[Edition, ...] = ()) -> 
                 source=source,
                 copyright=rights,
                 coverage=coverage,
+                reference_basis=reference_basis,
                 error=ErrorInfo(code=error.code, message=str(error)),
-                note=str(error),
+                note=str(error) + limits,
             )
         text = edition.text
         paragraphs = edition.paragraphs
@@ -197,9 +205,10 @@ def verify_quote(request: VerifyRequest, editions: tuple[Edition, ...] = ()) -> 
                 source=source,
                 copyright=rights,
                 coverage=coverage,
+                reference_basis=reference_basis,
                 unverified_regions=warnings,
                 error=ErrorInfo(code="unverified_draft", message=message),
-                note=message,
+                note=message + limits,
             )
     assert request.quotes is not None
     normalized, positions = normalize(text)
@@ -212,6 +221,7 @@ def verify_quote(request: VerifyRequest, editions: tuple[Edition, ...] = ()) -> 
         source=source,
         copyright=rights,
         coverage=coverage,
+        reference_basis=reference_basis,
         checked_count=len(results),
         all_submitted_exact=verified,
         unverified_regions=warnings,
@@ -220,7 +230,6 @@ def verify_quote(request: VerifyRequest, editions: tuple[Edition, ...] = ()) -> 
             if verified
             else "검토가 필요한 인용이 있습니다. 차이·후보·미확인 결과를 확인하세요."
         )
-        + (
-            " 초안에서 지원한 표시 영역만 검사했습니다. 나머지는 미검증입니다." if extracted else ""
-        ),
+        + (" 초안에서 지원한 표시 영역만 검사했습니다. 나머지는 미검증입니다." if extracted else "")
+        + limits,
     )
