@@ -86,6 +86,7 @@ def test_hash_change_and_edition(payload: dict[str, object], coverage: str) -> N
     assert result.error is not None and result.error.code == "source_changed"
     assert result.source == manifest.source
     assert result.coverage == coverage
+    assert result.reference_basis == "reviewed_edition"
 
 
 async def test_verify_tool_and_no_source_logs(caplog) -> None:

@@ -12,7 +12,7 @@ import httpx
 from pydantic import Field, HttpUrl
 
 from korean_lit_mcp.cache import CacheBusy, PublicCache
-from korean_lit_mcp.contracts import Envelope, Input, Source, Text
+from korean_lit_mcp.contracts import Envelope, Input, SearchContext, Source, Text
 from korean_lit_mcp.sources import SourceError
 from korean_lit_mcp.work_identity import WorkIdentity, classify_record, find_candidates
 
@@ -156,6 +156,11 @@ class ClassicalLibrary:
             items=items,
             work_candidates=candidates,
             source=SOURCE,
+            search_context=SearchContext(
+                request=request.model_dump(mode="json"),
+                scope="itkc",
+                outcome="related_records" if items else "no_matches",
+            ),
             retrieved_at=datetime.fromisoformat(data["retrieved_at"]),
             note=f"전체 {data['total']}건 중 첫 {len(items)}건. 검색필드는 기관의 검색 발췌이며 "
             "강조 마크업이 포함될 수 있습니다. 작품 전문·검수 판본이 아니며 "
@@ -171,5 +176,8 @@ class ClassicalLibrary:
             "레코드·판본 식별 확정이 아닙니다. "
             "title_candidate는 제목 후보, body_mention은 문자열 언급, "
             "unconfirmed_search_match는 알려진 이칭과 불일치, unclassified는 미등록 검색어입니다. "
-            "동음 한자·동명이작을 자동 결합하지 않습니다. 캐시 최대 5분.",
+            "동음 한자·동명이작을 자동 결합하지 않습니다. "
+            "현재 검색 범위의 결과이며 전체 자료원 미수록을 뜻하지 않습니다. "
+            "원문 미확보 시 확인한 판본이나 교사 제공 본문으로 대조하세요. "
+            "모델 기억·추정 복원을 원문으로 사용하지 마세요. 캐시 최대 5분.",
         )
