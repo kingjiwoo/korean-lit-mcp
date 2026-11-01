@@ -158,3 +158,35 @@ async def test_mcp_unconfigured(monkeypatch):
     async with Client(create_server()) as client:
         result = await client.call_tool("search_classical_text", {"request": {"query": "test"}})
         assert result.structured_content["error"]["code"] == "upstream_not_configured"
+
+
+@pytest.mark.parametrize("target", ["body", "title"])
+async def test_record_author_is_not_work_author(target):
+    # A same-title article in another book must not identify the work's author.
+    raw = XML.replace(
+        b"</doc>",
+        (
+            '<field name="서명">합성 문헌집</field><field name="저자">합성 기록자</field></doc>'
+        ).encode(),
+    )
+    library = ClassicalLibrary(
+        transport=httpx.MockTransport(lambda r: httpx.Response(200, content=raw))
+    )
+    result = await library.search(ClassicalSearchRequest(query="Test", target=target))
+    item = result.items[0]
+    assert item["document_author"] == item["author"] == "합성 기록자"
+    assert item["author_role"] == "source_record_author"
+    assert item["work_author"] is None
+    assert item["search_target"] == target
+    assert item["is_excerpt"] and not item["available_text"]
+    assert "작품의 작가를 뜻하지 않습니다" in result.note
+    assert ("제목 일치" if target == "title" else "본문 언급") in result.note
+
+
+async def test_missing_record_author_stays_unknown():
+    library = ClassicalLibrary(
+        transport=httpx.MockTransport(lambda r: httpx.Response(200, content=XML))
+    )
+    item = (await library.search(ClassicalSearchRequest(query="Test"))).items[0]
+    assert item["document_author"] == item["author"] == ""
+    assert item["work_author"] is None
