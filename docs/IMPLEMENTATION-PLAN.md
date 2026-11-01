@@ -448,7 +448,7 @@ PR 12의 요청 입력은 `query`, 제한된 `collection`(`classic`, `anthology`
 | 작업 | 실제 브랜치/PR | 완료 기준 |
 | --- | --- | --- |
 | 검색 저자·범위 수정 | `fix/classical-author-scope`, PR #18 (develop 통합 완료) | [이슈 #17](https://github.com/kingjiwoo/korean-lit-mcp/issues/17)의 저자 혼동 재현 사례, 기존 필드 호환, 테스트·리뷰 후 develop 통합 |
-| 출처 실증·문법 계약 | `docs/keyless-source-contracts` (현재 PR) | 한국학자료센터 공개 테스트 API와 HTTPS·전문 한계 기록, 문법 입력/출력·자료·오류·검증 계약 확정, 필수 검사·리뷰 후 develop 통합 |
-| README·진행 상태 | `docs/current-capabilities` (후속 PR) | 현재 동작 기능·설정·예시·미지원 범위·남은 외부 조건을 일치시키고 develop 통합 |
+| 출처 실증·문법 계약 | `docs/keyless-source-contracts`, PR #20 (develop 통합 완료) | 한국학자료센터 공개 테스트 API와 HTTPS·전문 한계 기록, 문법 입력/출력·자료·오류·검증 계약 확정, 필수 검사·리뷰 후 develop 통합 |
+| README·진행 상태 | `docs/current-capabilities` (이번 README 정리 PR) | 현재 동작 기능·설정·예시·미지원 범위·남은 외부 조건을 일치시키고 develop 통합 |
 
 [키 없는 출처 실증](decisions/0003-keyless-sources.md)에서 한국학자료센터 문헌 목록은 확인했지만 Python HTTPS 연결과 전문 공급을 확인하지 못했다. 검색 커넥터를 검증 완료로 추가하지 않는다. [문법 도구 계약](GRAMMAR-TOOL-PLAN.md)은 확정했지만 재사용 가능한 검수 항목이 없어 새 문법 도구를 등록하지 않는다. 국립중앙도서관 키 대기와 이 두 조건은 서로 별개다.
