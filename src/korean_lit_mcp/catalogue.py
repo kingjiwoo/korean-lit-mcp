@@ -5,9 +5,10 @@ import logging
 import re
 import xml.etree.ElementTree as ET
 from datetime import UTC, datetime
+from urllib.parse import parse_qsl, unquote, urljoin
 
 import httpx
-from pydantic import HttpUrl
+from pydantic import HttpUrl, ValidationError
 
 from korean_lit_mcp.cache import CacheBusy, PublicCache
 from korean_lit_mcp.contracts import Envelope, SearchRequest, Source
@@ -38,13 +39,50 @@ def parse_response(raw: bytes) -> tuple[list[dict[str, str]], int]:
             raise ValueError("Missing total")
         total = int(total_text)
         records = [{child.tag: child.text or "" for child in item} for item in root.iter("item")]
-        if total < 0 or (total > 0 and not records):
+        if total < 0 or (total > 0 and not records) or len(records) > total:
             raise ValueError("Unexpected record shape")
-        if any(not r.get("title_info") or not r.get("control_no") for r in records):
+        if any(
+            not r.get("title_info", "").strip()
+            or not (r.get("control_no") or r.get("id"))
+            or any(
+                value and not re.fullmatch(r"[\w.-]{1,100}", value)
+                for value in (r.get("control_no", ""), r.get("id", ""))
+            )
+            for r in records
+        ):
             raise ValueError("Missing catalogue fields")
         return records, total
     except (ET.ParseError, ValueError) as error:
         raise SourceError("upstream_invalid", "기관 API 응답 형식을 확인할 수 없습니다.") from error
+
+
+def public_link(value: str, *, detail: bool = False) -> str | None:
+    if not value:
+        return None
+    try:
+        url = HttpUrl(
+            urljoin("https://www.nl.go.kr/", value)
+            if detail and value.startswith("/") and not value.startswith("//")
+            else value
+        )
+        if url.username or url.password:
+            return None
+        if any(
+            k.casefold() in {"key", "api_key", "apikey", "token"}
+            for k, _ in parse_qsl(url.query or "")
+        ):
+            return None
+        return str(url)
+    except ValidationError:
+        return None
+
+
+def publication_year(value: str) -> int | None:
+    # Era years are not Gregorian; use only explicit years/dates or bracketed Western years.
+    if re.fullmatch(r"[0-9]{4}(?:[0-9]{4})?", value):
+        return int(value[:4])
+    match = re.search(r"[([]([0-9]{4})[)\]]", value)
+    return int(match[1]) if match else None
 
 
 class NationalLibrary:
@@ -70,6 +108,8 @@ class NationalLibrary:
                 "pageNum": "1",
                 "pageSize": "20",
             }
+            if request.nl_category == "old_books":
+                params["category"] = "고문헌"
             try:
                 async with httpx.AsyncClient(
                     transport=self.transport or httpx.AsyncHTTPTransport(retries=1),
@@ -95,6 +135,14 @@ class NationalLibrary:
                                     "upstream_invalid", "기관 API 응답이 크기 제한을 넘습니다."
                                 )
                 records, total = parse_response(bytes(body))
+                if len(records) > 20 or any(
+                    self.api_key in unquote(value)
+                    for record in records
+                    for value in record.values()
+                ):
+                    raise SourceError(
+                        "upstream_invalid", "기관 API 응답을 안전하게 처리할 수 없습니다."
+                    )
                 logging.getLogger(__name__).info("upstream source=nl outcome=ok")
                 return json.dumps(
                     {
@@ -119,7 +167,7 @@ class NationalLibrary:
 
         try:
             raw = await self.cache.get(
-                ("nl-v1", request.query),
+                ("nl-v2", request.query, request.nl_category),
                 fetch,
                 ttl=lambda value: 60 if not json.loads(value)["records"] else 30 * 86400,
             )
@@ -133,15 +181,25 @@ class NationalLibrary:
             author = record.get("author_info", "")
             if request.author is not None and search_key(request.author) not in search_key(author):
                 continue
-            year_match = re.search(r"\d{4}", record.get("pub_year_info", ""))
-            year = int(year_match[0]) if year_match else None
+            year = publication_year(record.get("pub_year_info", ""))
             if request.year_from is not None and (year is None or year < request.year_from):
                 continue
             if request.year_to is not None and (year is None or year > request.year_to):
                 continue
             items.append(
                 {
-                    "work_id": "nl-" + record["control_no"],
+                    "work_id": "nl-" + (record.get("control_no") or "id-" + record["id"]),
+                    "record_id": "nl-record-" + (record.get("id") or record["control_no"]),
+                    "catalogue_id": record.get("id") or None,
+                    "control_no": record.get("control_no") or None,
+                    "publisher": record.get("pub_info", ""),
+                    "publication_year_text": record.get("pub_year_info", ""),
+                    "material_type": record.get("type_name", ""),
+                    "url": public_link(record.get("detail_link", ""), detail=True),
+                    "original_url": public_link(record.get("org_link", "")),
+                    "original_type": record.get("doc_yn", ""),
+                    "access_code": record.get("lic_yn", ""),
+                    "access_note": record.get("lic_text", ""),
                     "title": record["title_info"],
                     "author": author,
                     "year": year,
@@ -158,9 +216,19 @@ class NationalLibrary:
             retrieved_at=datetime.fromisoformat(cached["retrieved_at"]),
             note=(
                 "기관 검색 첫 20건에 작가·연도 필터를 적용했습니다. "
+                "연도를 확정하지 못한 자료는 연도 필터에서 제외됩니다. "
                 "서지 캐시는 최대 30일이며 retrieved_at은 최초 조회 시각입니다. "
+                "nl_category는 NL 서지 검색에만 적용되며 검수 원문 목록을 분류하지 않습니다. "
                 "기관 서지 ID는 서버의 검수 원문 ID와 다릅니다. "
+                "record_id로 레코드를 구분하세요. "
+                "호환 work_id의 제어번호는 여러 레코드에서 같을 수 있습니다. "
+                "original_type·original_url·access_code·access_note는 기관의 제공·열람 정보입니다. "
+                "링크·관외 무료 열람도 텍스트 전문 API나 재배포 허락을 뜻하지 않습니다. "
                 "원문 유무를 본문 제공 허락으로 간주하지 않습니다."
-                + (" 검색 결과 500건 상한에 도달했습니다." if cached["total"] >= 500 else "")
+                + (
+                    " 총검색건수는 500건 이상이나 기관은 500건까지만 탐색을 허용합니다."
+                    if cached["total"] >= 500
+                    else ""
+                )
             ),
         )
