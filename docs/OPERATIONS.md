@@ -38,7 +38,7 @@ Vercel은 `app.py`의 ASGI `app`을 불러옵니다. CLI·컨테이너와 같은
 
 문법 자료는 기동 시 `data/grammar/entries.json`에서 읽습니다. 추가 API 키·LLM·DB가 필요하지 않으며 누락·형식/출처/권리 오류·1MB 초과 자료는 기동 실패로 드러납니다. 초기 수록은 현대 8·중세 2·근대 표기 1항목입니다. 자료를 수정하면 출처·이용조건·버전과 관련 검증도 갱신합니다. 문법 조회의 정상 미검색을 자료 로딩 실패와 혼동하지 않습니다.
 
-Vercel의 시스템 환경변수 자동 노출을 켭니다. `MCP_ALLOWED_HOSTS`가 없으면 `VERCEL_URL`, `VERCEL_BRANCH_URL`, `VERCEL_PROJECT_PRODUCTION_URL`을 허용합니다. 로컬 `.env.example`의 localhost 값을 Vercel에 복사하지 않습니다. 별도로 값을 지정하면 시스템 도메인 대신 그 목록만 허용합니다. `NL_API_KEY`는 승인 후 서버 환경에만 추가하며 새 배포부터 적용됩니다.
+Vercel의 시스템 환경변수 자동 노출을 켭니다. `MCP_ALLOWED_HOSTS`가 없으면 `VERCEL_URL`, `VERCEL_BRANCH_URL`, `VERCEL_PROJECT_PRODUCTION_URL`을 허용합니다. 로컬 `.env.example`의 localhost 값을 Vercel에 복사하지 않습니다. 별도로 값을 지정하면 시스템 도메인 대신 그 목록만 허용합니다. `NL_API_KEY`는 서버 Secret으로만 추가하며 새 배포부터 적용됩니다. 로컬 비밀값은 Git 제외 파일 `.env.local`에 두고 `.env.example`에는 넣지 않습니다. 자동 로딩은 없으므로 실행 프로세스에 별도로 전달합니다. 인증 API는 [실증 기록](decisions/0005-nl-authenticated-search.md)에 따라 확인했고, 운영 반영 후 고문헌 서지·기관 링크·열람 조건을 별도 MCP 호출로 검사합니다.
 
 ```sh
 npx --yes vercel@65.9.0 link --project korean-lit-mcp

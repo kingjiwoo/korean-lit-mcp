@@ -103,6 +103,7 @@ class VerifyRequest(Input):
 
 
 class SearchRequest(Input):
+    nl_category: Literal["all", "old_books"] = "all"
     query: Annotated[Text, Field(max_length=200)]
     author: Annotated[Text, Field(max_length=100)] | None = None
     year_from: int | None = Field(default=None, ge=0, le=9999)
