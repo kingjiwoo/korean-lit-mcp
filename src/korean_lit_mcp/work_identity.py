@@ -16,6 +16,7 @@ class WorkIdentity(BaseModel):
     title: str
     author: str | None = None
     aliases: tuple[str, ...]
+    catalogue_queries: tuple[str, ...] = ()
     attested_in: tuple[str, ...]
     attribution: str
     reference: HttpUrl
@@ -34,6 +35,7 @@ WORKS = (
     ),
     WorkIdentity(
         identity_id="discovery-samiingok",
+        catalogue_queries=("송강가사",),
         title="사미인곡",
         author="정철",
         aliases=("사미인곡", "思美人曲"),
@@ -51,6 +53,7 @@ WORKS = (
     ),
     WorkIdentity(
         identity_id="discovery-cheongsanbyeolgok",
+        catalogue_queries=("악장가사",),
         title="청산별곡",
         aliases=("청산별곡", "靑山別曲", "青山別曲"),
         attested_in=("악장가사: 전문", "시용향악보: 제1연과 곡조"),
@@ -60,6 +63,7 @@ WORKS = (
     ),
     WorkIdentity(
         identity_id="discovery-gwandong-jeongcheol",
+        catalogue_queries=("송강가사", "협률대성"),
         title="관동별곡",
         author="정철",
         aliases=("관동별곡", "關東別曲"),
@@ -70,6 +74,7 @@ WORKS = (
     ),
     WorkIdentity(
         identity_id="discovery-gwandong-anchuk",
+        catalogue_queries=("근재집",),
         title="관동별곡",
         author="안축",
         aliases=("관동별곡", "關東別曲"),

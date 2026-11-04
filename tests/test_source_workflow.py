@@ -21,7 +21,8 @@ async def test_missing_work_is_not_an_empty_catalogue(has_editions):
     editions = load_editions(Path("data/works")) if has_editions else ()
     async with Client(create_server(editions=editions)) as client:
         result = await client.call_tool(
-            "search_works", {"request": {"query": "청산별곡", "author": "합성 작가"}}
+            "search_works",
+            {"request": {"query": "청산별곡", "author": "합성 작가", "mode": "catalogue"}},
         )
     data = result.structured_content
     context = data["search_context"]
@@ -48,7 +49,9 @@ async def test_nl_failure_keeps_query_and_local_inventory(monkeypatch, query, pa
     async with Client(
         create_server(editions=load_editions(Path("data/works")), nl_api_key="fixture-key")
     ) as client:
-        result = await client.call_tool("search_works", {"request": {"query": query}})
+        result = await client.call_tool(
+            "search_works", {"request": {"query": query, "mode": "catalogue"}}
+        )
     data = result.structured_content
     context = data["search_context"]
     assert context["request"]["query"] == query
@@ -69,7 +72,9 @@ async def test_nl_metadata_success_is_not_a_passage(monkeypatch):
 
     monkeypatch.setattr(NationalLibrary, "search", metadata)
     async with Client(create_server(nl_api_key="fixture-key")) as client:
-        result = await client.call_tool("search_works", {"request": {"query": "합성 서지"}})
+        result = await client.call_tool(
+            "search_works", {"request": {"query": "합성 서지", "mode": "catalogue"}}
+        )
     data = result.structured_content
     assert data["search_context"]["outcome"] == "matches"
     assert data["search_context"]["reviewed_work_count"] == 0
@@ -114,7 +119,7 @@ async def test_itkc_context_on_every_outcome(monkeypatch, mode):
         "query": "규원가",
         "collection": "anthology",
         "target": "title",
-        "limit": 10,
+        "limit": 3,
     }
     assert context["scope"] == "itkc"
     assert context["reviewed_work_count"] is None

@@ -14,7 +14,7 @@ Claude의 원격 MCP 커넥터에 URL을 등록합니다. 사용자 회원가입
 
 | 도구 | 하는 일 | 범위와 제한 |
 | --- | --- | --- |
-| `search_works` | 검수 작품·판본 검색, 선택적인 국립중앙도서관 서지 검색 | 내장 작품은 김유정 「동백꽃」·「봄·봄」 두 편. NL_API_KEY 설정 시에만 외부 서지 검색 사용. 고문헌은 nl_category=old_books로 한정 가능. 서지는 원문 제공을 보장하지 않음 |
+| `search_works` | 기본 문학 작품·검수 판본 탐색, 명시적인 일반 서지 검색 | 내장 작품은 김유정 「동백꽃」·「봄·봄」 두 편. NL_API_KEY 설정 시에만 외부 서지 검색 사용. 고문헌은 nl_category=old_books로 한정 가능. 서지는 원문 제공을 보장하지 않음 |
 | `get_passage` | 검수 판본의 원문·행 주소·판본 ID·해시 조회 | 현재 내장 두 작품만 제공. TXT 물리 행은 교과서 문단과 다를 수 있음 |
 | `verify_quote` | 개별 인용이나 지원 형식의 초안을 원문과 대조 | 조회한 판본·해시 또는 사용자가 제공한 본문 기준. 문학 해석·문법·문제 정답은 판정하지 않음 |
 | `search_classical_text` | 고전원문·한국문집총간·한국고전총간의 본문/기사명 검색 | ITKC 검색 발췌·링크 제공. 모든 고전시가·고전소설의 전문을 제공하는 도구가 아님 |
@@ -29,7 +29,11 @@ Claude의 원격 MCP 커넥터에 URL을 등록합니다. 사용자 회원가입
 
 문법 조회의 `period`는 `modern`, `middle`, `early_modern` 중 하나입니다. `term`은 100자 이하, `limit`은 기본 5·최대 10입니다. 예: `{"term":"거듭 적기","period":"early_modern"}`. 다른 시대의 자료로 자동 대체하지 않으며, 미검색은 해당 시대의 검수 항목에 없다는 뜻입니다. 합성 예시와 사전의 형태 예시를 실제 문헌 인용으로 사용하지 않습니다. 문법 데이터는 [CC BY-SA 2.0 KR](data/grammar/LICENSE.md)이며 코드의 MIT 라이선스와 구분합니다.
 
-NL 키가 설정된 `search_works`에서 `{"query":"홍길동전","nl_category":"old_books"}`로 고문헌 서지를 찾을 수 있습니다. 기본 `all`과 달리 음악·현대 도서 등 다른 유형을 제외하는 NL 조건이며 내장 검수 작품 검색에는 적용하지 않습니다. 결과의 `record_id`·`material_type`·`publisher`·`publication_year_text`·`original_url`·`access_code`·`access_note`를 확인합니다. 링크나 관외 무료 안내가 있어도 `available_text=false`이며 `get_passage` 전문 공급과 재배포 허락을 뜻하지 않습니다. [인증 API 실증과 판본별 한계](docs/decisions/0005-nl-authenticated-search.md)를 참고하세요.
+`search_works`의 기본 `mode=literature`는 검수 원문을 먼저 반환합니다. 미확보 기준 작품은 작품 후보·`text_status=unavailable`·다음 수록 문헌/서지 검색 요청인 `next_searches`를 보여 줍니다. 동명의 음악 자료와 관련 기사를 작품 원문으로 내세우지 않습니다. `work_identified`는 작품 후보 식별이며 전문 확보가 아닙니다. 기본 결과 수는 두 검색 도구 모두 3개입니다.
+
+일반 서지 전체는 `mode=catalogue`를 명시합니다. 문학 모드는 KDC 예술(6) 자료도 제외하므로 공연·악보·예술 관련 서지는 catalogue 모드로 찾으세요. 문학 모드의 기관 도서 후보도 `identity_status=unconfirmed`이며 레코드 저자를 작품 작가로 확정하지 않습니다. 원래의 넓은 NL 검색이 필요하면 catalogue 모드를 사용하세요.
+
+NL 키가 설정된 `search_works`에서 `{"query":"홍길동전","mode":"catalogue","nl_category":"old_books"}`로 고문헌 서지를 찾을 수 있습니다. 기본 `all`과 달리 음악·현대 도서 등 다른 유형을 제외하는 NL 조건이며 내장 검수 작품 검색에는 적용하지 않습니다. 결과의 `record_id`·`material_type`·`publisher`·`publication_year_text`·`original_url`·`access_code`·`access_note`를 확인합니다. 링크나 관외 무료 안내가 있어도 `available_text=false`이며 `get_passage` 전문 공급과 재배포 허락을 뜻하지 않습니다. [인증 API 실증과 판본별 한계](docs/decisions/0005-nl-authenticated-search.md)를 참고하세요.
 
 고전 검색 요청의 `collection`은 `classic`(고전원문), `anthology`(한국문집총간), `corpus`(한국고전총간)입니다. `target=title`은 기사명 탐색, `target=body`는 본문 언급 검색이며 기존 기본값은 `body`입니다. 한 컬렉션의 0건을 전체 자료원의 미수록으로 해석하지 않습니다.
 

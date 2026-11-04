@@ -23,7 +23,7 @@ class ClassicalSearchRequest(Input):
     query: Annotated[Text, Field(max_length=200)]
     collection: Literal["classic", "anthology", "corpus"] = "classic"
     target: Literal["body", "title"] = "body"
-    limit: int = Field(default=10, ge=1, le=20)
+    limit: int = Field(default=3, ge=1, le=20)
 
 
 class ClassicalSearchResult(Envelope[dict[str, object]]):
@@ -164,23 +164,14 @@ class ClassicalLibrary:
                 outcome="related_records" if items else "no_matches",
             ),
             retrieved_at=datetime.fromisoformat(data["retrieved_at"]),
-            note=f"전체 {data['total']}건 중 첫 {len(items)}건. 검색필드는 기관의 검색 발췌이며 "
-            "강조 마크업이 포함될 수 있습니다. 작품 전문·검수 판본이 아니며 "
-            "get_passage의 작품 ID로 사용할 수 없습니다. "
-            "document_author는 기관 레코드의 저자이며 검색한 작품의 작가를 뜻하지 않습니다. "
-            "author는 같은 값의 호환 필드입니다. work_author는 확인되지 않아 null입니다. "
+            note=f"전체 {data['total']}건 중 첫 {len(items)}건. "
+            "기관 검색 발췌이며 작품 전문·검수 판본이 아닙니다. "
+            "document_author와 author는 문헌 저자이며 작품의 작가를 뜻하지 않습니다. "
             + (
-                "기사명 검색 결과이며 제목 일치가 작품 원문 확인을 뜻하지 않습니다. "
+                "기사명 검색이며 제목 일치·제목 안 언급은 작품 확인이 아닙니다. "
                 if request.target == "title"
-                else "본문 언급 검색 결과이며 작품 자체를 찾은 것이 아닙니다. "
+                else "본문 언급 검색이며 작품 확인이 아닙니다. "
             )
-            + "work_candidates는 검색어에 대한 참고 메타데이터이며 "
-            "레코드·판본 식별 확정이 아닙니다. "
-            "title_candidate는 제목 후보, title_mention은 제목 안 언급, "
-            "body_mention은 본문 발췌의 문자열 언급, "
-            "unconfirmed_search_match는 알려진 이칭과 불일치, unclassified는 미등록 검색어입니다. "
-            "동음 한자·동명이작을 자동 결합하지 않습니다. "
-            "현재 검색 범위의 결과이며 전체 자료원 미수록을 뜻하지 않습니다. "
-            "원문 미확보 시 확인한 판본이나 교사 제공 본문으로 대조하세요. "
-            "모델 기억·추정 복원을 원문으로 사용하지 마세요. 캐시 최대 5분.",
+            + "원문 찾기는 search_works를 사용하세요. record_id는 get_passage ID가 아닙니다. "
+            "0건은 전체 자료원의 부재가 아닙니다. 추정 복원하지 마세요. 캐시 최대 5분.",
         )
