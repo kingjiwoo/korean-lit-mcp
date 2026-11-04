@@ -86,3 +86,5 @@ README·교사 안내에는 지원 작품/판본, 미확보 상태, 실제 조�
 
 - R-01: [PR #45](https://github.com/kingjiwoo/korean-lit-mcp/pull/45) develop 통합 완료.
 - R-02: 기본 literature/명시 catalogue 모드, 검수 원문 우선, 미확보 작품 후보·다음 탐색 요청과 짧은 서지 요약을 구현한다. 기본 NL 도서 검색은 음악 관련 자료를 분리하고 기본 후보 3개·16 KiB HTTP/MCP 예산을 검사한다.
+
+- R-03: [출처·권리·인코딩·공급 실증](CLASSICAL-TEXT-SUPPLY.md)에 공유마당 TXT, AKS 전사, NL 브라우저 PDF와 미공급 조건을 기록했다.
