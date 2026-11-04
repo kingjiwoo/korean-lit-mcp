@@ -17,6 +17,7 @@ class WorkIdentity(BaseModel):
     author: str | None = None
     aliases: tuple[str, ...]
     catalogue_queries: tuple[str, ...] = ()
+    reviewed_work_ids: tuple[str, ...] = ()
     attested_in: tuple[str, ...]
     attribution: str
     reference: HttpUrl
@@ -35,6 +36,7 @@ WORKS = (
     ),
     WorkIdentity(
         identity_id="discovery-samiingok",
+        reviewed_work_ids=("gongu-13313606",),
         catalogue_queries=("송강가사",),
         title="사미인곡",
         author="정철",

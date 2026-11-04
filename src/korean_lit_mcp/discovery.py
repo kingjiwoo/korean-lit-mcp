@@ -20,6 +20,8 @@ def discover_work(
             and search_key(request.query) == search_key(w.author)
             and (request.author is None or search_key(request.author) == search_key(w.author))
         ]
+    supplied_ids = {e.manifest.work_id for e in editions}
+    candidates = [w for w in candidates if not supplied_ids.intersection(w.reviewed_work_ids)]
     if not candidates:
         return None
     return Envelope(

@@ -40,7 +40,11 @@ def test_original_bytes_and_addresses(tmp_path: Path) -> None:
 
 def test_bundled_sources_are_intact() -> None:
     editions = load_editions(Path("data/works"))
-    assert {e.manifest.work_id for e in editions} == {"gongu-9000397", "gongu-9000404"}
+    assert {e.manifest.work_id for e in editions} == {
+        "gongu-9000397",
+        "gongu-9000404",
+        "gongu-13313606",
+    }
 
 
 def test_corruption_is_rejected(tmp_path: Path) -> None:

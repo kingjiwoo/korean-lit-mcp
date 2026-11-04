@@ -9,16 +9,24 @@ from korean_lit_mcp.contracts import (
     Source,
 )
 from korean_lit_mcp.sources import Edition, SourceError, search_key, select_edition
+from korean_lit_mcp.work_identity import find_candidates
 
 
 def search_works(
     request: SearchRequest, editions: tuple[Edition, ...]
 ) -> Envelope[dict[str, object]]:
+    bound_ids = {
+        wid for w in find_candidates(request.query, request.author) for wid in w.reviewed_work_ids
+    }
     term = search_key(request.query)
     matches = []
     for edition in editions:
         m = edition.manifest
-        if not term or (term not in search_key(m.title) and term not in search_key(m.author)):
+        if not term or (
+            m.work_id not in bound_ids
+            and term not in search_key(m.title)
+            and term not in search_key(m.author)
+        ):
             continue
         if request.author is not None and search_key(request.author) not in search_key(m.author):
             continue
