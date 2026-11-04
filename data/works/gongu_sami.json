@@ -1,0 +1,20 @@
+{
+  "work_id": "gongu-13313606",
+  "edition_id": "gongu-13313606-txt-20261105",
+  "title": "사미인곡",
+  "author": "정철",
+  "year": 0,
+  "edition": "공유마당 제공 TXT: 원문 1–65행, 현대역 제외 (2026-11-05 수집)",
+  "source": {
+    "name": "한국저작권위원회 공유마당",
+    "url": "https://gongu.copyright.or.kr/gongu/wrt/wrt/view.do?menuNo=200019&wrtSn=13313606"
+  },
+  "copyright": "public_domain",
+  "rights_url": "https://gongu.copyright.or.kr/gongu/wrt/wrt/view.do?menuNo=200019&wrtSn=13313606",
+  "rights_note": "기관 상세의 자유이용 만료 표시 확인. 출처와 전사본 정보를 유지하세요.",
+  "reviewed_at": "2026-11-05T00:00:00Z",
+  "filename": "gongu_sami.txt",
+  "sha256": "04082bb8aae54121d5bbb61e20fa24f521a6c1f968700255a9dc9fce8aefc0b1",
+  "segmentation": "source_lines",
+  "note": "원문 1–65행, 현대역 제외. 기관 제공 전사 문자열을 보존합니다. 원사료 교감 미실시·저본 미상(홍길동전은 명시 판본). 0년은 발행연도 미상. 행 주소는 TXT 물리 행입니다. 교과서 판본과 대조하세요. 첫 두 행은 빈 행이며 본문은 3행부터입니다. 창작연도와 판본 발행연도를 구분하며 year=0은 판본 발행연도 미상입니다."
+}
