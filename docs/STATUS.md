@@ -97,6 +97,6 @@ Claude Code `claude-opus-4-7` 독립 교차 리뷰는 develop 병합 가능으�
 
 ## 문학 검색·원문 공급 R-01~06 (2026-11-05)
 
-PR #45 작품 식별, #46 문학 기본 검색·요약, #47 실제 공급 조사, #48 사미인곡 연결을 develop에 통합했다. R-05는 관동별곡·규원가·홍길동전 두 판본·청산별곡을 연결한다. [계획](CLASSICAL-RETRIEVAL-PLAN.md)·[공급 근거](CLASSICAL-TEXT-SUPPLY.md)·[원문 변환 이력](../data/works/README.md)을 유지한다.
+PR #45 작품 식별, #46 문학 기본 검색·요약, #47 실제 공급 조사, #48 사미인곡 연결을 develop에 통합했다. PR #49에서 관동별곡·규원가·홍길동전 두 판본·청산별곡을 연결했다. [계획](CLASSICAL-RETRIEVAL-PLAN.md)·[공급 근거](CLASSICAL-TEXT-SUPPLY.md)·[원문 변환 이력](../data/works/README.md)을 유지한다.
 
 R-06은 여섯 기준 작품의 실제 HTTP/MCP 검색 예산, 제공 원문 범위, 인용 변경/수정, 오래된 해시·다른 판본 거부를 검증한다. 서버 내부 LLM·DB·사용자 인증을 도입하지 않았다. 기관 전사의 무결성 검수와 원사료 교감·교과서 판본 인증은 구별한다. 실제 교사 학교 환경 실증은 남아 있다.
