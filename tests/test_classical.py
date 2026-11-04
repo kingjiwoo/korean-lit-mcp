@@ -192,19 +192,27 @@ async def test_missing_record_author_stays_unknown():
     assert item["work_author"] is None
 
 
+@pytest.mark.parametrize("target", ["title", "body"])
 @pytest.mark.parametrize(
     "query,title,snippet,kind",
     [
         ("규원가", "九原可", "九原可", "unconfirmed_search_match"),
         ("사미인곡", "思美人曲", "思美人曲", "title_candidate"),
-        ("사미인곡", "합성 기사", '정철의 <em class="hl1">思美人曲</em>', "body_mention"),
+        (
+            "사미인곡",
+            "합성 기사",
+            '정철의 <em class="hl1">思美人曲</em>',
+            "unconfirmed_search_match",
+        ),
         ("홍길동전", "洪吉童傳", "합성 발췌", "title_candidate"),
         ("홍길동젼", "홍길동전", "합성 발췌", "title_candidate"),
         ("洪吉童傳", "홍길동젼", "합성 발췌", "title_candidate"),
         ("미등록 합성 제목", "미등록 합성 제목", "합성 발췌", "unclassified"),
     ],
 )
-async def test_identity_is_only_a_discovery_candidate(query, title, snippet, kind):
+async def test_identity_is_only_a_discovery_candidate(query, title, snippet, kind, target):
+    if target == "body" and query == "사미인곡" and title == "합성 기사":
+        kind = "body_mention"
     from xml.sax.saxutils import escape
 
     raw = XML.replace(b">Test<", f">{escape(title)}<".encode()).replace(
@@ -224,7 +232,7 @@ async def test_identity_is_only_a_discovery_candidate(query, title, snippet, kin
         patch.setattr(ClassicalLibrary, "search", search)
         async with Client(create_server()) as client:
             response = await client.call_tool(
-                "search_classical_text", {"request": {"query": query, "target": "title"}}
+                "search_classical_text", {"request": {"query": query, "target": target}}
             )
     result = response.structured_content
     item = result["items"][0]

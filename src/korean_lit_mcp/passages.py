@@ -1,6 +1,8 @@
 import hashlib
+from typing import cast
 
 from korean_lit_mcp.contracts import (
+    Copyright,
     Envelope,
     ErrorInfo,
     PassageRequest,
@@ -8,17 +10,25 @@ from korean_lit_mcp.contracts import (
     SearchRequest,
     Source,
 )
-from korean_lit_mcp.sources import Edition, SourceError, search_key, select_edition
+from korean_lit_mcp.sources import Edition, SourceError, permits_text, search_key, select_edition
+from korean_lit_mcp.work_identity import find_candidates
 
 
 def search_works(
     request: SearchRequest, editions: tuple[Edition, ...]
 ) -> Envelope[dict[str, object]]:
+    bound_ids = {
+        wid for w in find_candidates(request.query, request.author) for wid in w.reviewed_work_ids
+    }
     term = search_key(request.query)
     matches = []
     for edition in editions:
         m = edition.manifest
-        if not term or (term not in search_key(m.title) and term not in search_key(m.author)):
+        if not term or (
+            m.work_id not in bound_ids
+            and term not in search_key(m.title)
+            and term not in search_key(m.author)
+        ):
             continue
         if request.author is not None and search_key(request.author) not in search_key(m.author):
             continue
@@ -38,13 +48,17 @@ def search_works(
                 "retrieved_at": m.reviewed_at.isoformat(),
                 "copyright": m.copyright,
                 "rights_url": str(m.rights_url),
-                "available_text": m.copyright == "public_domain",
+                "available_text": permits_text(m),
+                "rights_note": m.rights_note,
+                "note": m.note,
             }
         )
     return Envelope(
         items=matches[: request.limit],
         source=Source(name="검수 원문 목록"),
-        copyright="public_domain" if matches else "unknown",
+        copyright=cast(Copyright, matches[0]["copyright"])
+        if matches and len({m["copyright"] for m in matches}) == 1
+        else "unknown",
         search_context=SearchContext(
             request=request.model_dump(mode="json"),
             scope="reviewed_catalogue",

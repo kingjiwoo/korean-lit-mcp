@@ -5,7 +5,7 @@ from typing import Annotated, Literal, Self
 
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, model_validator
 
-Copyright = Literal["public_domain", "protected", "unknown"]
+Copyright = Literal["public_domain", "licensed", "protected", "unknown"]
 Identifier = Annotated[str, Field(min_length=1, max_length=128, pattern=r"^[\w.-]+$")]
 Text = Annotated[str, Field(min_length=1, pattern=r"\S")]
 Quote = Annotated[Text, Field(max_length=2000)]
@@ -28,8 +28,9 @@ class ErrorInfo(BaseModel):
 
 class SearchContext(BaseModel):
     request: dict[str, object]
-    scope: Literal["reviewed_catalogue", "reviewed_catalogue_and_nl", "itkc"]
+    scope: Literal["reviewed_catalogue", "reviewed_catalogue_and_nl", "itkc", "literary_discovery"]
     outcome: Literal[
+        "work_identified",
         "matches",
         "no_matches",
         "empty_catalogue",
@@ -103,12 +104,13 @@ class VerifyRequest(Input):
 
 
 class SearchRequest(Input):
+    mode: Literal["literature", "catalogue"] = "literature"
     nl_category: Literal["all", "old_books"] = "all"
     query: Annotated[Text, Field(max_length=200)]
     author: Annotated[Text, Field(max_length=100)] | None = None
     year_from: int | None = Field(default=None, ge=0, le=9999)
     year_to: int | None = Field(default=None, ge=0, le=9999)
-    limit: int = Field(default=10, ge=1, le=20)
+    limit: int = Field(default=3, ge=1, le=20)
 
     @model_validator(mode="after")
     def validate_years(self) -> Self:

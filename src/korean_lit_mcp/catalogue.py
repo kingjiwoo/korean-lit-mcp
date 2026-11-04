@@ -110,6 +110,8 @@ class NationalLibrary:
             }
             if request.nl_category == "old_books":
                 params["category"] = "고문헌"
+            elif request.mode == "literature":
+                params["category"] = "도서"
             try:
                 async with httpx.AsyncClient(
                     transport=self.transport or httpx.AsyncHTTPTransport(retries=1),
@@ -167,7 +169,7 @@ class NationalLibrary:
 
         try:
             raw = await self.cache.get(
-                ("nl-v2", request.query, request.nl_category),
+                ("nl-v3", request.query, request.nl_category, request.mode),
                 fetch,
                 ttl=lambda value: 60 if not json.loads(value)["records"] else 30 * 86400,
             )

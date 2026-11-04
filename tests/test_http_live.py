@@ -82,3 +82,41 @@ async def test_live_http_workflow() -> None:
             await client.call_tool(
                 "lookup_grammar", {"request": {"term": "어간", "period": "modern", "limit": 11}}
             )
+
+
+async def test_live_classical_workflow() -> None:
+    assert URL
+    async with Client(URL) as client:
+        for title in ("사미인곡", "청산별곡", "관동별곡", "규원가", "홍길동전"):
+            found = (
+                await client.call_tool("search_works", {"request": {"query": title}})
+            ).structured_content
+            assert found is not None and found["error"] is None
+            selected = next(i for i in found["items"] if i["available_text"])
+            ids = {k: selected[k] for k in ("work_id", "edition_id")}
+            result = (
+                await client.call_tool("get_passage", {"request": {**ids, "start": 3, "end": 4}})
+            ).structured_content
+            assert result is not None and result["error"] is None
+            passage = result["items"][0]
+            quote = next(p["text"] for p in passage["paragraphs"] if p["text"].strip())[:150]
+            checked = (
+                await client.call_tool(
+                    "verify_quote",
+                    {"request": {**ids, "source_hash": passage["source_hash"], "quotes": [quote]}},
+                )
+            ).structured_content
+            assert checked is not None and checked["items"][0]["status"] == "exact"
+            if title == "청산별곡":
+                assert checked["copyright"] == "licensed"
+        missing = (
+            await client.call_tool("search_works", {"request": {"query": "구운몽"}})
+        ).structured_content
+        assert missing is not None and missing["items"]
+        assert all(not i["available_text"] for i in missing["items"])
+        ambiguous = (
+            await client.call_tool(
+                "get_passage", {"request": {"work_id": "classical-honggildongjeon"}}
+            )
+        ).structured_content
+        assert ambiguous is not None and ambiguous["error"]["code"] == "ambiguous_edition"

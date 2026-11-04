@@ -40,7 +40,15 @@ def test_original_bytes_and_addresses(tmp_path: Path) -> None:
 
 def test_bundled_sources_are_intact() -> None:
     editions = load_editions(Path("data/works"))
-    assert {e.manifest.work_id for e in editions} == {"gongu-9000397", "gongu-9000404"}
+    assert {e.manifest.work_id for e in editions} == {
+        "gongu-9000397",
+        "gongu-9000404",
+        "gongu-13313606",
+        "gongu-13313590",
+        "gongu-13313635",
+        "classical-honggildongjeon",
+        "aks-E0056472",
+    }
 
 
 def test_corruption_is_rejected(tmp_path: Path) -> None:
@@ -92,4 +100,23 @@ def test_file_size_bound(tmp_path: Path) -> None:
     write_edition(tmp_path)
     (tmp_path / "text.txt").write_bytes(b"x" * 250001)
     with pytest.raises(SourceError, match="크기"):
+        load_editions(tmp_path)
+
+
+@pytest.mark.parametrize(
+    "changes",
+    [
+        {"copyright": "licensed"},
+        {"copyright": "licensed", "reuse_license": "aks-public-use"},
+        {
+            "copyright": "licensed",
+            "reuse_license": "aks-public-use",
+            "rights_url": "https://encykorea.aks.ac.kr/Guide/ContentUse",
+            "source": {"name": "합성", "url": "https://example.org/Article/test"},
+        },
+    ],
+)
+def test_unqualified_license_cannot_bypass_rights_guard(tmp_path, changes):
+    write_edition(tmp_path, **changes)
+    with pytest.raises(SourceError, match="제공하지"):
         load_editions(tmp_path)

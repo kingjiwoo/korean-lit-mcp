@@ -21,7 +21,8 @@ async def test_missing_work_is_not_an_empty_catalogue(has_editions):
     editions = load_editions(Path("data/works")) if has_editions else ()
     async with Client(create_server(editions=editions)) as client:
         result = await client.call_tool(
-            "search_works", {"request": {"query": "청산별곡", "author": "합성 작가"}}
+            "search_works",
+            {"request": {"query": "청산별곡", "author": "합성 작가", "mode": "catalogue"}},
         )
     data = result.structured_content
     context = data["search_context"]
@@ -29,11 +30,8 @@ async def test_missing_work_is_not_an_empty_catalogue(has_editions):
     assert context["request"]["query"] == "청산별곡"
     assert context["request"]["author"] == "합성 작가"
     assert context["scope"] == "reviewed_catalogue"
-    assert (
-        context["reviewed_work_count"]
-        == context["reviewed_edition_count"]
-        == (2 if has_editions else 0)
-    )
+    assert context["reviewed_edition_count"] == len(editions)
+    assert context["reviewed_work_count"] == len({e.manifest.work_id for e in editions})
     assert context["outcome"] == ("no_matches" if has_editions else "empty_catalogue")
     assert data["items"] == [] and data["error"] is None
     assert "추정" in data["note"] and "source_text" in data["note"]
@@ -48,12 +46,14 @@ async def test_nl_failure_keeps_query_and_local_inventory(monkeypatch, query, pa
     async with Client(
         create_server(editions=load_editions(Path("data/works")), nl_api_key="fixture-key")
     ) as client:
-        result = await client.call_tool("search_works", {"request": {"query": query}})
+        result = await client.call_tool(
+            "search_works", {"request": {"query": query, "mode": "catalogue"}}
+        )
     data = result.structured_content
     context = data["search_context"]
     assert context["request"]["query"] == query
     assert context["scope"] == "reviewed_catalogue_and_nl"
-    assert context["reviewed_work_count"] == 2
+    assert context["reviewed_work_count"] == 7
     assert context["upstream_error"]["code"] == "upstream_unavailable"
     assert context["outcome"] == ("partial_results" if partial else "upstream_error")
     assert bool(data["items"]) == partial
@@ -69,7 +69,9 @@ async def test_nl_metadata_success_is_not_a_passage(monkeypatch):
 
     monkeypatch.setattr(NationalLibrary, "search", metadata)
     async with Client(create_server(nl_api_key="fixture-key")) as client:
-        result = await client.call_tool("search_works", {"request": {"query": "합성 서지"}})
+        result = await client.call_tool(
+            "search_works", {"request": {"query": "합성 서지", "mode": "catalogue"}}
+        )
     data = result.structured_content
     assert data["search_context"]["outcome"] == "matches"
     assert data["search_context"]["reviewed_work_count"] == 0
@@ -114,7 +116,7 @@ async def test_itkc_context_on_every_outcome(monkeypatch, mode):
         "query": "규원가",
         "collection": "anthology",
         "target": "title",
-        "limit": 10,
+        "limit": 3,
     }
     assert context["scope"] == "itkc"
     assert context["reviewed_work_count"] is None
