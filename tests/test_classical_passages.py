@@ -99,3 +99,33 @@ async def test_one_result_keeps_supplied_rights_without_hidden_discovery():
     assert result["copyright"] == "public_domain"
     assert len(result["items"]) == 1 and result["items"][0]["available_text"]
     assert "미확보 후보" not in result["note"]
+
+
+async def test_archaic_vowel_and_hanja_changes_do_not_pass_exact():
+    editions = load_editions(Path("data/works"))
+    async with Client(create_server(editions=editions)) as client:
+        data = (
+            await client.call_tool(
+                "get_passage", {"request": {"work_id": "aks-E0056472", "start": 2, "end": 2}}
+            )
+        ).structured_content
+        passage = data["items"][0]
+        quote = passage["paragraphs"][0]["text"]
+        assert "ᆞ" in quote and "靑" in quote
+        request = {
+            "work_id": passage["work_id"],
+            "edition_id": passage["edition_id"],
+            "source_hash": passage["source_hash"],
+        }
+        for changed in (quote.replace("ᆞ", "ᅡ"), quote.replace("靑", "青")):
+            result = (
+                await client.call_tool(
+                    "verify_quote", {"request": {**request, "quotes": [changed]}}
+                )
+            ).structured_content
+            assert result["items"][0]["status"] != "exact"
+            assert result["items"][0]["requires_review"]
+        result = (
+            await client.call_tool("verify_quote", {"request": {**request, "quotes": [quote]}})
+        ).structured_content
+        assert result["items"][0]["status"] == "exact"
