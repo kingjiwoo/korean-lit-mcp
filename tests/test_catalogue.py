@@ -209,7 +209,8 @@ async def test_category_cache_and_upstream_query_are_separate():
     await library.search(SearchRequest(query="Synthetic"))
     await library.search(SearchRequest(query="Synthetic", nl_category="old_books"))
     await library.search(SearchRequest(query="Synthetic", nl_category="old_books"))
-    assert categories == [None, "고문헌"]
+    await library.search(SearchRequest(query="Synthetic", mode="catalogue"))
+    assert categories == ["도서", "고문헌", None]
 
 
 async def test_echoed_secret_never_enters_cache_logs_or_result(caplog):

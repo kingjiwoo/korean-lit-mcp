@@ -12,6 +12,7 @@ from korean_lit_mcp.contracts import (
     Source,
     VerifyRequest,
 )
+from korean_lit_mcp.discovery import discover_work, summarize_bibliography
 from korean_lit_mcp.grammar import GrammarEntry, GrammarRequest, lookup_grammar
 from korean_lit_mcp.metrics import ToolMetrics
 from korean_lit_mcp.passages import get_passage, search_works
@@ -34,7 +35,11 @@ def create_server(
             "조회한 판본과 source_hash를 검증 요청에 전달하세요. "
             "미검증 범위를 검증 완료라고 표시하지 마세요. "
             "출처와 판본을 결과물에 표시하세요. "
-            "고전 작품 찾기는 search_classical_text의 target=title로 먼저 탐색하고, "
+            "작품 원문 찾기는 먼저 search_works의 기본 literature 모드를 사용하세요. "
+            "available_text가 참인 판본만 get_passage로 조회하고, "
+            "미확보면 next_searches를 확인하세요. "
+            "일반 서지는 search_works mode=catalogue로, "
+            "ITKC 관련 기록은 search_classical_text로 탐색하고, "
             "관련 기록은 target=body로 구분해 검색하세요. "
             "document_author와 호환 필드 author는 검색 문헌의 저자이며 작품 작가가 아닙니다. "
             "search_context.request의 실제 검색어를 사용자가 요청한 작품과 대조하세요. "
@@ -57,13 +62,23 @@ def create_server(
     async def search(request: SearchRequest) -> Envelope[dict[str, object]]:
         """작품 제목·작가로 검수된 원문을 찾을 때 사용합니다.
 
-        판본별 ID와 본문 제공 여부, 실제 요청·검색 범위·검수 목록 크기를 반환합니다.
+        기본 literature는 검수 원문·작품 식별을 우선하며 음악 자료를 주요 결과에서 제외합니다.
+        일반 서지 전체는 mode=catalogue를 명시하세요. next_searches는 수록 확정이 아닙니다.
+        검수 판본은 ID를, 미확보 작품 후보는 ID 없이 확보 상태를 반환합니다.
         0건은 이 조건의 미일치입니다. 빈 목록·전체 자료원 미수록으로 해석하지 마세요.
         nl_category=old_books는 NL 고문헌으로 검색하며 검수 목록에는 적용하지 않습니다.
         서지의 자료유형·원문 링크·열람 조건을 확인하세요. 원문 제공 여부와 다릅니다.
         원문 미확보 시 확인된 판본 또는 교사 제공 본문으로 대조하세요.
         """
         local = search_works(request, editions)
+        if request.mode == "literature":
+            if local.items:
+                for item in local.items:
+                    item.update(kind="reviewed_edition", text_status="available")
+                return local
+            discovered = discover_work(request, editions)
+            if discovered is not None:
+                return discovered
         if catalogue is None or len(local.items) >= request.limit:
             return local
         assert local.search_context is not None
@@ -82,11 +97,24 @@ def create_server(
                 search_context=local.search_context,
                 note=local.note + " 기관 검색 실패: " + str(error),
             )
+        if request.mode == "literature":
+            remote.items, omitted = summarize_bibliography(remote.items)
+            remote.note += (
+                "기관 도서 검색 첫 20건의 서지 후보이며 작품·원문 확보는 미확인입니다. "
+                f"음악·관련 기사 또는 응답 예산으로 {omitted}건을 제외했습니다. "
+                "전체 서지는 mode=catalogue로 조회하세요."
+            )
         local.items.extend(remote.items[: request.limit - len(local.items)])
         local.source = Source(name="검수 원문 목록·국립중앙도서관")
         local.copyright = "unknown" if remote.items else local.copyright
         local.retrieved_at = min(local.retrieved_at, remote.retrieved_at)
-        local.search_context.outcome = "matches" if local.items else "no_matches"
+        local.search_context.outcome = (
+            "related_records"
+            if request.mode == "literature" and local.items
+            else "matches"
+            if local.items
+            else "no_matches"
+        )
         local.note += " " + remote.note
         return local
 
