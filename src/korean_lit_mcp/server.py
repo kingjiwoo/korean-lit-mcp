@@ -98,6 +98,7 @@ def create_server(
         기본값 body는 기존 호출 호환을 유지합니다. 제목 일치가 작품 원문 확인은 아닙니다.
         실제 검색어·컬렉션·대상은 search_context.request로 확인하세요.
         document_author와 author는 기관 레코드 저자이며 작품 작가는 미확인입니다.
+        work_candidates의 author는 작품 후보의 참고 작가이며 레코드 저자를 바꾸지 않습니다.
         work_candidates는 검수 이칭의 참고 정보이고 match_kind는 문자열 비교 분류입니다.
         identity_status는 미확인입니다. 제목 후보도 작품·작가·판본 확정이 아닙니다.
         기관 검색 발췌와 자료 링크를 반환합니다. 전문 조회나 판본 검증이 아닙니다.

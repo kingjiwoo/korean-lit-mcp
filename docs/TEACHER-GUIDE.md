@@ -57,9 +57,9 @@
 
 ### 작품 후보와 동음 검색 결과
 
-`work_candidates`는 규원가·사미인곡·홍길동전의 검수 제목·이칭과 귀속 참고 정보입니다. 근거 링크와 귀속 이견을 확인합니다. `identity_id`는 원문 조회 ID가 아닙니다.
+`work_candidates`는 규원가·사미인곡·홍길동전·청산별곡·관동별곡·구운몽의 검수 제목·이칭과 귀속 참고 정보입니다. 근거 링크와 귀속 이견을 확인합니다. `identity_id`는 원문 조회 ID가 아닙니다.
 
-`match_kind=title_candidate`는 같은 제목의 기사 후보, `body_mention`은 발췌의 이칭 문자열 언급, `unconfirmed_search_match`는 알려진 이칭과 불일치, `unclassified`는 검수 이칭 미등록입니다. 규원가 검색의 九原可는 불일치로 구분합니다. 모든 레코드의 `identity_status=unconfirmed`이며 동일 작품이나 판본을 확정하지 않습니다. 다른 작품의 동명 기사는 자동 제거하지 않으므로 문헌을 직접 확인합니다. 이칭 목록의 범위와 검수 근거는 [식별 계약](decisions/0004-classical-identity.md)을 참고하세요.
+`match_kind=title_candidate`는 같은 제목의 기사 후보, `title_mention`은 제목 안 언급, `body_mention`은 본문 검색 발췌의 이칭 문자열 언급, `unconfirmed_search_match`는 알려진 이칭과 불일치, `unclassified`는 검수 이칭 미등록입니다. 규원가 검색의 九原可는 불일치로 구분합니다. 모든 레코드의 `identity_status=unconfirmed`이며 동일 작품이나 판본을 확정하지 않습니다. 다른 작품의 동명 기사는 자동 제거하지 않으므로 문헌을 직접 확인합니다. 이칭 목록의 범위와 검수 근거는 [식별 계약](decisions/0004-classical-identity.md)을 참고하세요.
 
 ## 문법 개념 찾기
 

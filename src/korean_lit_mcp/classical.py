@@ -131,7 +131,9 @@ class ClassicalLibrary:
         for record in data["records"]:
             items.append(
                 {
-                    "match_kind": classify_record(record["기사명"], record["검색필드"], candidates),
+                    "match_kind": classify_record(
+                        record["기사명"], record["검색필드"], candidates, target=request.target
+                    ),
                     "identity_status": "unconfirmed",
                     "record_id": record["자료ID"],
                     "title": record["기사명"],
@@ -174,7 +176,8 @@ class ClassicalLibrary:
             )
             + "work_candidates는 검색어에 대한 참고 메타데이터이며 "
             "레코드·판본 식별 확정이 아닙니다. "
-            "title_candidate는 제목 후보, body_mention은 문자열 언급, "
+            "title_candidate는 제목 후보, title_mention은 제목 안 언급, "
+            "body_mention은 본문 발췌의 문자열 언급, "
             "unconfirmed_search_match는 알려진 이칭과 불일치, unclassified는 미등록 검색어입니다. "
             "동음 한자·동명이작을 자동 결합하지 않습니다. "
             "현재 검색 범위의 결과이며 전체 자료원 미수록을 뜻하지 않습니다. "
