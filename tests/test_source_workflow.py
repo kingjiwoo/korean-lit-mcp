@@ -30,11 +30,8 @@ async def test_missing_work_is_not_an_empty_catalogue(has_editions):
     assert context["request"]["query"] == "청산별곡"
     assert context["request"]["author"] == "합성 작가"
     assert context["scope"] == "reviewed_catalogue"
-    assert (
-        context["reviewed_work_count"]
-        == context["reviewed_edition_count"]
-        == (len(editions) if has_editions else 0)
-    )
+    assert context["reviewed_edition_count"] == len(editions)
+    assert context["reviewed_work_count"] == len({e.manifest.work_id for e in editions})
     assert context["outcome"] == ("no_matches" if has_editions else "empty_catalogue")
     assert data["items"] == [] and data["error"] is None
     assert "추정" in data["note"] and "source_text" in data["note"]
@@ -56,7 +53,7 @@ async def test_nl_failure_keeps_query_and_local_inventory(monkeypatch, query, pa
     context = data["search_context"]
     assert context["request"]["query"] == query
     assert context["scope"] == "reviewed_catalogue_and_nl"
-    assert context["reviewed_work_count"] == 3
+    assert context["reviewed_work_count"] == 7
     assert context["upstream_error"]["code"] == "upstream_unavailable"
     assert context["outcome"] == ("partial_results" if partial else "upstream_error")
     assert bool(data["items"]) == partial

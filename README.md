@@ -14,8 +14,8 @@ Claude의 원격 MCP 커넥터에 URL을 등록합니다. 사용자 회원가입
 
 | 도구 | 하는 일 | 범위와 제한 |
 | --- | --- | --- |
-| `search_works` | 기본 문학 작품·검수 판본 탐색, 명시적인 일반 서지 검색 | 내장 작품은 김유정 「동백꽃」·「봄·봄」과 정철 「사미인곡」. NL_API_KEY 설정 시에만 외부 서지 검색 사용. 고문헌은 nl_category=old_books로 한정 가능. 서지는 원문 제공을 보장하지 않음 |
-| `get_passage` | 검수 판본의 원문·행 주소·판본 ID·해시 조회 | 현재 내장 세 작품 제공. TXT 물리 행은 교과서 문단과 다를 수 있음 |
+| `search_works` | 기본 문학 작품·검수 판본 탐색, 명시적인 일반 서지 검색 | 내장 작품은 총 7작품 8판본. 김유정 두 작품과 사미인곡·청산별곡·정철 관동별곡·규원가·홍길동전 두 판본. NL_API_KEY 설정 시에만 외부 서지 검색 사용. 고문헌은 nl_category=old_books로 한정 가능. 서지는 원문 제공을 보장하지 않음 |
+| `get_passage` | 검수 판본의 원문·행 주소·판본 ID·해시 조회 | 내장 7작품 8판본 제공. TXT 물리 행은 교과서 문단과 다를 수 있음 |
 | `verify_quote` | 개별 인용이나 지원 형식의 초안을 원문과 대조 | 조회한 판본·해시 또는 사용자가 제공한 본문 기준. 문학 해석·문법·문제 정답은 판정하지 않음 |
 | `search_classical_text` | 고전원문·한국문집총간·한국고전총간의 본문/기사명 검색 | ITKC 검색 발췌·링크 제공. 모든 고전시가·고전소설의 전문을 제공하는 도구가 아님 |
 | `lookup_grammar` | 시대별 문법 개념·별칭·예시·출처 조회 | 초기 현대 8·중세 2·근대 표기 1항목. 문장 분석·시험 정답 판정은 수행하지 않음 |
@@ -106,3 +106,5 @@ TEST_MCP_URL=https://korean-lit-mcp.vercel.app/mcp uv run pytest tests/test_http
 - [브랜치·배포 전략](docs/BRANCHING-AND-DEPLOYMENT.md), [작업 계획](docs/IMPLEMENTATION-PLAN.md), [현재 상태](docs/STATUS.md)
 - [교사 사용 안내](docs/TEACHER-GUIDE.md), [운영·배포 안내](docs/OPERATIONS.md)
 - [ITKC 검색 실증](docs/decisions/0002-itkc-search.md), [키 없는 원문 출처 실증](docs/decisions/0003-keyless-sources.md)
+
+고전 원문은 기관 제공 전사이며 원사료 교감·교과서 정본 일치는 인증하지 않습니다. 공유마당 만료 TXT와 AKS 원고 이용 안내를 판본별로 적용합니다. 규원가·홍길동전의 귀속 이견은 응답에 유지하며, 구운몽은 텍스트 미공급입니다. [원문 공급 이력](data/works/README.md)과 [출처 조사](docs/CLASSICAL-TEXT-SUPPLY.md)를 확인하세요.

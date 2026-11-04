@@ -75,6 +75,11 @@ def create_server(
             if local.items:
                 for item in local.items:
                     item.update(kind="reviewed_edition", text_status="available")
+                missing = discover_work(request, editions)
+                if missing is not None and len(local.items) < request.limit:
+                    local.items.extend(missing.items[: max(0, request.limit - len(local.items))])
+                    local.copyright = "unknown"
+                    local.note += " " + missing.note
                 return local
             discovered = discover_work(request, editions)
             if discovered is not None:
@@ -145,7 +150,7 @@ def create_server(
 
     @server.tool(name="get_passage", annotations={"readOnlyHint": True})
     def passage(request: PassageRequest) -> Envelope[dict[str, object]]:
-        """인용 작성 전에 만료 판본의 원문을 확보할 때 사용합니다.
+        """인용 작성 전에 이용 가능한 검수 판본의 원문을 확보할 때 사용합니다.
 
         원문 미확보 시 확인한 판본이나 교사 제공 본문으로 대조하고 추정 복원하지 마세요.
         원문을 변형 없이 반환합니다. 문단·행 주소는 1부터 시작하고 끝을 포함합니다.

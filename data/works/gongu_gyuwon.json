@@ -1,0 +1,20 @@
+{
+  "work_id": "gongu-13313635",
+  "edition_id": "gongu-13313635-txt-20261105",
+  "title": "규원가",
+  "author": "허난설헌(귀속 이견)",
+  "year": 0,
+  "edition": "공유마당 제공 TXT: 기관 저자 허난설헌. 무옥 등 귀속 이견. 각주 표지만 제공되며 주석 없음 (2026-11-05 수집)",
+  "source": {
+    "name": "한국저작권위원회 공유마당",
+    "url": "https://gongu.copyright.or.kr/gongu/wrt/wrt/view.do?menuNo=200019&wrtSn=13313635"
+  },
+  "copyright": "public_domain",
+  "rights_url": "https://gongu.copyright.or.kr/gongu/wrt/wrt/view.do?menuNo=200019&wrtSn=13313635",
+  "rights_note": "기관 상세의 조건 코드97(img_license97.png, 자유이용 만료) 확인. 출처와 전사본 정보를 유지하세요.",
+  "reviewed_at": "2026-11-05T00:00:00Z",
+  "filename": "gongu_gyuwon.txt",
+  "sha256": "85860d1ef877b1e90ee26d7031346ea9d21cc55555b4aefb77487c2c3e17e565",
+  "segmentation": "source_lines",
+  "note": "기관 저자 허난설헌. 무옥 등 귀속 이견. 각주 표지만 제공되며 주석 없음. 기관 제공 전사 문자열을 보존합니다. 원사료 교감 미실시·저본 미상(홍길동전은 명시 판본). 0년은 발행연도 미상. 행 주소는 TXT 물리 행입니다. 교과서 판본과 대조하세요."
+}

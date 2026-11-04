@@ -61,7 +61,7 @@ def discover_work(
             reviewed_work_count=len({e.manifest.work_id for e in editions}),
             reviewed_edition_count=len(editions),
         ),
-        note="작품 후보는 식별했지만 제공할 검수 원문은 없습니다. "
+        note="미확보 후보 항목의 작품은 식별했지만 제공할 검수 원문은 없습니다. "
         "next_searches는 수록 문헌/서지 탐색 경로이며 해당 판본의 수록을 확정하지 않습니다. "
         "연도 조건은 제공 판본의 발행연도에 적용되며 이 후보의 충족 여부는 미확인입니다. "
         "작가 미상·귀속 이견 후보는 요청한 작가 조건의 충족을 확인하지 않습니다. "

@@ -28,6 +28,7 @@ class WorkIdentity(BaseModel):
 WORKS = (
     WorkIdentity(
         identity_id="discovery-gyuwonga",
+        reviewed_work_ids=("gongu-13313635",),
         title="규원가",
         aliases=("규원가", "閨怨歌", "원부사", "怨夫詞", "怨婦詞", "원부가", "怨婦歌"),
         attested_in=("고금가곡", "교주가곡집", "순오지"),
@@ -47,6 +48,7 @@ WORKS = (
     ),
     WorkIdentity(
         identity_id="discovery-honggildongjeon",
+        reviewed_work_ids=("classical-honggildongjeon",),
         title="홍길동전",
         aliases=("홍길동전", "홍길동젼", "洪吉童傳", "위도왕전", "韋島王傳"),
         attested_in=("택당집 별집 권15 산록: 작품 저술 언급, 현전 판본과 동일성 미확정",),
@@ -55,6 +57,7 @@ WORKS = (
     ),
     WorkIdentity(
         identity_id="discovery-cheongsanbyeolgok",
+        reviewed_work_ids=("aks-E0056472",),
         catalogue_queries=("악장가사",),
         title="청산별곡",
         aliases=("청산별곡", "靑山別曲", "青山別曲"),
@@ -65,6 +68,7 @@ WORKS = (
     ),
     WorkIdentity(
         identity_id="discovery-gwandong-jeongcheol",
+        reviewed_work_ids=("gongu-13313590",),
         catalogue_queries=("송강가사", "협률대성"),
         title="관동별곡",
         author="정철",

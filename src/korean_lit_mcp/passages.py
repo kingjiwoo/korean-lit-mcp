@@ -1,6 +1,8 @@
 import hashlib
+from typing import cast
 
 from korean_lit_mcp.contracts import (
+    Copyright,
     Envelope,
     ErrorInfo,
     PassageRequest,
@@ -8,7 +10,7 @@ from korean_lit_mcp.contracts import (
     SearchRequest,
     Source,
 )
-from korean_lit_mcp.sources import Edition, SourceError, search_key, select_edition
+from korean_lit_mcp.sources import Edition, SourceError, permits_text, search_key, select_edition
 from korean_lit_mcp.work_identity import find_candidates
 
 
@@ -46,13 +48,17 @@ def search_works(
                 "retrieved_at": m.reviewed_at.isoformat(),
                 "copyright": m.copyright,
                 "rights_url": str(m.rights_url),
-                "available_text": m.copyright == "public_domain",
+                "available_text": permits_text(m),
+                "rights_note": m.rights_note,
+                "note": m.note,
             }
         )
     return Envelope(
         items=matches[: request.limit],
         source=Source(name="검수 원문 목록"),
-        copyright="public_domain" if matches else "unknown",
+        copyright=cast(Copyright, matches[0]["copyright"])
+        if matches and len({m["copyright"] for m in matches}) == 1
+        else "unknown",
         search_context=SearchContext(
             request=request.model_dump(mode="json"),
             scope="reviewed_catalogue",
