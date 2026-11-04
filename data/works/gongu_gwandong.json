@@ -1,0 +1,20 @@
+{
+  "work_id": "gongu-13313590",
+  "edition_id": "gongu-13313590-txt-20261105",
+  "title": "관동별곡",
+  "author": "정철",
+  "year": 0,
+  "edition": "공유마당 제공 TXT: 정철 가사, 안축의 동명이작과 구분 (2026-11-05 수집)",
+  "source": {
+    "name": "한국저작권위원회 공유마당",
+    "url": "https://gongu.copyright.or.kr/gongu/wrt/wrt/view.do?menuNo=200019&wrtSn=13313590"
+  },
+  "copyright": "public_domain",
+  "rights_url": "https://gongu.copyright.or.kr/gongu/wrt/wrt/view.do?menuNo=200019&wrtSn=13313590",
+  "rights_note": "기관 상세의 조건 코드97(img_license97.png, 자유이용 만료) 확인. 출처와 전사본 정보를 유지하세요.",
+  "reviewed_at": "2026-11-05T00:00:00Z",
+  "filename": "gongu_gwandong.txt",
+  "sha256": "919bbf076666846383fdd9c57035edb6a37a050e2f3178396b3cfd5bf3d4a008",
+  "segmentation": "source_lines",
+  "note": "정철 가사, 안축의 동명이작과 구분. 기관 제공 전사 문자열을 보존합니다. 원사료 교감 미실시·저본 미상(홍길동전은 명시 판본). 0년은 발행연도 미상. 행 주소는 TXT 물리 행입니다. 교과서 판본과 대조하세요."
+}

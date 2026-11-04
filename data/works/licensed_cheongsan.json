@@ -1,0 +1,21 @@
+{
+  "work_id": "aks-E0056472",
+  "edition_id": "aks-E0056472-20261105",
+  "title": "청산별곡",
+  "author": "작자 미상",
+  "year": 2024,
+  "edition": "한국민족문화대백과사전 청산별곡 항목 인용 전사, 저본 미상 (항목 최종수정 2024-12-09)",
+  "source": {
+    "name": "청산별곡, 『한국민족문화대백과사전』, 한국학중앙연구원",
+    "url": "https://encykorea.aks.ac.kr/Article/E0056472"
+  },
+  "copyright": "licensed",
+  "reuse_license": "aks-public-use",
+  "rights_url": "https://encykorea.aks.ac.kr/Guide/ContentUse",
+  "rights_note": "항목 원고 전체의 공공저작물 자유이용 안내 적용. 출처 표시: 청산별곡, 『한국민족문화대백과사전』. 미디어 미포함.",
+  "reviewed_at": "2026-11-05T00:00:00Z",
+  "filename": "aks_cheongsan.txt",
+  "sha256": "dab3e29162399dd08eb52509f6546a5cb8e20b4758fc4660b158329d40fa83de",
+  "segmentation": "source_lines",
+  "note": "항목의 전문 인용 24개 문단 문자열에 LF를 삽입했습니다. 8연 순서·옛한글·한자 병기는 기관 전사대로 보존합니다. 원사료 교감·교과서 판본 동일성 미확인. year는 항목 수정연도입니다. 출처 표시: 청산별곡, 『한국민족문화대백과사전』."
+}

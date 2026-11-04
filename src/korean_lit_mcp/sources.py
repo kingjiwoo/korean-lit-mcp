@@ -28,6 +28,7 @@ class Manifest(Input):
     edition: Text
     source: Source
     copyright: Copyright
+    reuse_license: Literal["aks-public-use"] | None = None
     rights_url: HttpUrl
     rights_note: Text
     reviewed_at: AwareDatetime
@@ -35,6 +36,17 @@ class Manifest(Input):
     sha256: Digest
     segmentation: Literal["blank_lines", "source_lines"] = "blank_lines"
     note: str = ""
+
+
+def permits_text(manifest: Manifest) -> bool:
+    return manifest.copyright == "public_domain" or (
+        manifest.copyright == "licensed"
+        and manifest.reuse_license == "aks-public-use"
+        and str(manifest.rights_url) == "https://encykorea.aks.ac.kr/Guide/ContentUse"
+        and manifest.source.url is not None
+        and manifest.source.url.host == "encykorea.aks.ac.kr"
+        and (manifest.source.url.path or "").startswith("/Article/")
+    )
 
 
 @dataclass(frozen=True)
@@ -90,7 +102,7 @@ def load_editions(directory: Path) -> tuple[Edition, ...]:
                 "invalid_manifest", "원문 메타데이터 경로 또는 크기가 잘못되었습니다."
             )
         manifest = Manifest.model_validate_json(read_limited(path, 65536))
-        if manifest.copyright != "public_domain":
+        if not permits_text(manifest):
             raise SourceError(
                 "copyright_restricted", "보호 또는 권리 불명 자료의 본문은 제공하지 않습니다."
             )
@@ -148,7 +160,7 @@ def select_edition(
     if len(matches) != 1:
         raise SourceError("ambiguous_edition", "여러 판본이 있습니다. edition_id를 지정하세요.")
     selected = matches[0]
-    if selected.manifest.copyright != "public_domain":
+    if not permits_text(selected.manifest):
         raise SourceError(
             "copyright_restricted", "보호 또는 권리 불명 자료의 본문은 제공하지 않습니다."
         )

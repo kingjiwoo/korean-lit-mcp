@@ -7,7 +7,7 @@ from typing import Literal
 
 from pydantic import BaseModel, Field, ValidationError
 
-from korean_lit_mcp.contracts import Envelope, ErrorInfo, Source, VerifyRequest
+from korean_lit_mcp.contracts import Copyright, Envelope, ErrorInfo, Source, VerifyRequest
 from korean_lit_mcp.drafts import ExtractedQuote, extract_quotes
 from korean_lit_mcp.sources import Edition, Paragraph, SourceError, select_edition, split_paragraphs
 
@@ -162,7 +162,7 @@ def verify_quote(request: VerifyRequest, editions: tuple[Edition, ...] = ()) -> 
     if reference_basis == "supplied_text":
         limits += " 제공 문자열과의 대조이며 정본·출처·다른 판본의 동일성을 인증하지 않습니다."
     source = Source(name="교사 제공 텍스트")
-    rights: Literal["public_domain", "protected", "unknown"] = "unknown"
+    rights: Copyright = "unknown"
     text = request.source_text
     if text is None:
         source = Source(name="검수 원문 목록")

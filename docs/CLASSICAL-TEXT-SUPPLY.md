@@ -15,10 +15,10 @@ R-03 조사 기록이다. 파일 확보와 제품 적재는 구분한다. 아래
 | 작품 / 판본 | 기관 ID / 상세 | 원본 인코딩 | 수집 바이트 | 원본 SHA-256 | 확인 / 제한 |
 | --- | --- | --- | --- | --- | --- |
 | 사미인곡 | [13313606](https://gongu.copyright.or.kr/gongu/wrt/wrt/view.do?menuNo=200019&wrtSn=13313606) | UTF-16 BOM | 5730 | `2df7e38d405ed124bd4b40da9ed898eaf8d6be4f9a7a1192e390e8ca57543111` | 원문 1–65행, 현대역 66행 이후 분리 필요 |
-| 관동별곡(정철) | [13313590](https://gongu.copyright.or.kr/gongu/wrt/wrt/view.do?menuNo=200019&wrtSn=13313590) | UTF-8 BOM | 9638 | `919bbf076666846383fdd9c57035edb6a37a050e2f3178396b3cfd5bf3d4a008` | 옛한글 TXT |
-| 규원가 | [13313635](https://gongu.copyright.or.kr/gongu/wrt/wrt/view.do?menuNo=200019&wrtSn=13313635) | UTF-8 BOM | 3496 | `85860d1ef877b1e90ee26d7031346ea9d21cc55555b4aefb77487c2c3e17e565` | 각주 표지 포함, 주석 본문 미제공 |
-| 홍길동전 경판 30장 | [13313633](https://gongu.copyright.or.kr/gongu/wrt/wrt/view.do?menuNo=200019&wrtSn=13313633) | UTF-8 BOM | 80191 | `48c19d3cc528acde795149fc816295ae2aa3c7d8d9c112dee3661591460cf719` | 옛한글 TXT |
-| 홍길동전 완판 36장 | [13313634](https://gongu.copyright.or.kr/gongu/wrt/wrt/view.do?menuNo=200019&wrtSn=13313634) | UTF-8 BOM | 105390 | `9af6af859c9e6ed0eae3962027d87a7ebf3198bbc7dc60eedf30fe82b0e97570` | 옛한글 TXT |
+| 관동별곡(정철) | [13313590](https://gongu.copyright.or.kr/gongu/wrt/wrt/view.do?menuNo=200019&wrtSn=13313590) | UTF-8 (BOM 없음) | 9638 | `919bbf076666846383fdd9c57035edb6a37a050e2f3178396b3cfd5bf3d4a008` | 옛한글 TXT |
+| 규원가 | [13313635](https://gongu.copyright.or.kr/gongu/wrt/wrt/view.do?menuNo=200019&wrtSn=13313635) | UTF-8 (BOM 없음) | 3496 | `85860d1ef877b1e90ee26d7031346ea9d21cc55555b4aefb77487c2c3e17e565` | 각주 표지 포함, 주석 본문 미제공 |
+| 홍길동전 경판 30장 | [13313633](https://gongu.copyright.or.kr/gongu/wrt/wrt/view.do?menuNo=200019&wrtSn=13313633) | UTF-8 (BOM 없음) | 80191 | `48c19d3cc528acde795149fc816295ae2aa3c7d8d9c112dee3661591460cf719` | 옛한글 TXT |
+| 홍길동전 완판 36장 | [13313634](https://gongu.copyright.or.kr/gongu/wrt/wrt/view.do?menuNo=200019&wrtSn=13313634) | UTF-8 (BOM 없음) | 105390 | `9af6af859c9e6ed0eae3962027d87a7ebf3198bbc7dc60eedf30fe82b0e97570` | 옛한글 TXT |
 
 상세 파일 목록의 표시 크기와 실제 다운로드 크기가 다른 사례가 있으므로 위 해시는 실제 수신 파일 기준이다. 원본 bytes를 엄격 디코딩하고 원문 구간만 UTF-8로 저장한다. BOM 제거·인코딩 변환·구간 추출 외 정규화, 맞춤법 교정, 띄어쓰기 복원, OCR, 모델 추정 복원은 하지 않는다. 사미인곡은 66행의 “이 몸이 태어날 때 님을 따라 태어나니”부터 현대역이므로 원문 파일에서 제외한다. CRLF·선행 빈 행·옛한글 조합은 보존한다. 각 적재 PR에서 변환 후 해시와 실제 행 대조를 기록한다.
 

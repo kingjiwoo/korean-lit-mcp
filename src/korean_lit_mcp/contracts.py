@@ -5,7 +5,7 @@ from typing import Annotated, Literal, Self
 
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, model_validator
 
-Copyright = Literal["public_domain", "protected", "unknown"]
+Copyright = Literal["public_domain", "licensed", "protected", "unknown"]
 Identifier = Annotated[str, Field(min_length=1, max_length=128, pattern=r"^[\w.-]+$")]
 Text = Annotated[str, Field(min_length=1, pattern=r"\S")]
 Quote = Annotated[Text, Field(max_length=2000)]
