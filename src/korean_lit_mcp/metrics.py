@@ -24,6 +24,7 @@ class ToolMetrics(Middleware):
             "find_passage",
             "verify_quote",
             "verify_excerpt",
+            "review_material",
             "search_classical_text",
             "lookup_grammar",
         }:

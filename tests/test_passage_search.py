@@ -114,8 +114,9 @@ async def test_mcp_phrase_search_needs_no_network_and_connects_to_verification(m
         assert checked["items"][0]["status"] == "exact"
 
 
-def test_default_http_phrase_search_budget():
-    e = edition(("가" * 200 + "\n") * 20)
+@pytest.mark.parametrize("mode", ["exact", "orthography"])
+def test_default_http_phrase_search_budget(mode):
+    e = edition(("가" * 200 + "\n") * 20 if mode == "exact" else "가\u3000\u3000" * 300)
     with TestClient(
         create_http_app(editions=(e,), allowed_hosts=["localhost"]), base_url="http://localhost"
     ) as c:
@@ -133,6 +134,7 @@ def test_default_http_phrase_search_budget():
                             "work_id": e.manifest.work_id,
                             "edition_id": e.manifest.edition_id,
                             "query": "가" * 200,
+                            "match_mode": mode,
                         }
                     },
                 },

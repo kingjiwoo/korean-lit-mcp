@@ -34,6 +34,7 @@ class PassageSearchResult(Envelope[PassageMatch]):
     source_hash: Digest | None = None
     has_more: bool = False
     omitted_oversized_matches: int = 0
+    omitted_budget_matches: int = 0
 
 
 def find_passage(request: FindPassageRequest, editions: tuple[Edition, ...]) -> PassageSearchResult:
@@ -76,7 +77,7 @@ def find_passage(request: FindPassageRequest, editions: tuple[Edition, ...]) -> 
                 context_text=text[start:end],
             )
         )
-    return PassageSearchResult(
+    result = PassageSearchResult(
         work_id=request.work_id,
         edition_id=request.edition_id,
         items=items,
@@ -89,6 +90,13 @@ def find_passage(request: FindPassageRequest, editions: tuple[Edition, ...]) -> 
         note="선택 판본 안의 구절 검색입니다. 위치는 0부터 시작하며 끝은 제외합니다. "
         "원문 text와 문맥은 변형하지 않았습니다. 표기 차이·여러 위치는 검토하세요. "
         "문맥 경계는 코드포인트 기준입니다. 600자를 넘는 일치 후보는 생략 건수를 표시합니다. "
-        "검색한 앞 11곳을 기준으로 반환하며 0건을 판본 전체의 부재로 해석하지 마세요. "
-        + manifest.note,
+        "검색한 앞 11곳을 기준으로 반환합니다. 응답 예산 생략 건수도 확인하고 "
+        "문맥을 줄여 재시도하세요. 0건을 판본 전체의 부재로 해석하지 마세요. " + manifest.note,
     )
+
+    # Leave room for MCP's text + structured result duplication and JSON escaping.
+    while result.items and len(result.model_dump_json().encode("utf-8")) > 6000:
+        result.items.pop()
+        result.omitted_budget_matches += 1
+        result.has_more = True
+    return result
