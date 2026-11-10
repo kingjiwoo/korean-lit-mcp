@@ -37,6 +37,7 @@ async def test_live_http_workflow() -> None:
             "search_works",
             "search_classical_text",
             "get_passage",
+            "find_passage",
             "verify_quote",
             "lookup_grammar",
         }
