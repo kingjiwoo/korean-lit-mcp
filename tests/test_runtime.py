@@ -32,6 +32,7 @@ def test_public_tools_do_not_require_login() -> None:
             "search_works",
             "search_classical_text",
             "get_passage",
+            "find_passage",
             "verify_quote",
             "lookup_grammar",
         }

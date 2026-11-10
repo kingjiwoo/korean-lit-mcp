@@ -15,6 +15,7 @@ from korean_lit_mcp.contracts import (
 from korean_lit_mcp.discovery import discover_work, summarize_bibliography
 from korean_lit_mcp.grammar import GrammarEntry, GrammarRequest, lookup_grammar
 from korean_lit_mcp.metrics import ToolMetrics
+from korean_lit_mcp.passage_search import FindPassageRequest, PassageSearchResult, find_passage
 from korean_lit_mcp.passages import get_passage, search_works
 from korean_lit_mcp.sources import Edition, SourceError
 from korean_lit_mcp.verification import VerificationResult, verify_quote
@@ -36,7 +37,8 @@ def create_server(
             "미검증 범위를 검증 완료라고 표시하지 마세요. "
             "출처와 판본을 결과물에 표시하세요. "
             "작품 원문 찾기는 먼저 search_works의 기본 literature 모드를 사용하세요. "
-            "available_text가 참인 판본만 get_passage로 조회하고, "
+            "available_text가 참인 판본의 구절 위치는 find_passage로 찾으세요. "
+            "get_passage로 원문을 조회하세요. "
             "미확보면 next_searches를 확인하세요. "
             "일반 서지는 search_works mode=catalogue로, "
             "ITKC 관련 기록은 search_classical_text로 탐색하고, "
@@ -147,6 +149,17 @@ def create_server(
                 ),
                 note="기관 검색에 실패했습니다. 자료 0건이나 원문 부재가 아닙니다.",
             )
+
+    @server.tool(name="find_passage", annotations={"readOnlyHint": True})
+    def phrase_search(request: FindPassageRequest) -> PassageSearchResult:
+        """search_works로 선택한 work_id·edition_id 안에서 구절과 앞뒤 원문을 찾습니다.
+
+        기본 exact, 선택 orthography는 NFC·공백·따옴표 차이 후보이며 정확 일치와 다릅니다.
+        원문 좌표 start/end는 0부터 시작, 끝 제외입니다. 여러 위치는 임의로 확정하지 마세요.
+        반환된 행 주소로 get_passage를 조회하고 source_hash로 verify_quote에 연결하세요.
+        LLM·외부 API를 호출하지 않으며, 문학 해석이나 생략 복원은 하지 않습니다.
+        """
+        return find_passage(request, editions)
 
     @server.tool(name="get_passage", annotations={"readOnlyHint": True})
     def passage(request: PassageRequest) -> Envelope[dict[str, object]]:

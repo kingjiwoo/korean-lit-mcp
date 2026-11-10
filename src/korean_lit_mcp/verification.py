@@ -75,6 +75,32 @@ def differences(quote: str, original: str) -> list[dict[str, object]]:
     ]
 
 
+def find_locations(
+    needle: str,
+    text: str,
+    paragraphs: tuple[Paragraph, ...],
+    *,
+    normalized: str | None = None,
+    positions: list[tuple[int, int]] | None = None,
+) -> list[Location]:
+    """Up to eleven overlapping raw locations; eleven signals truncated ten-hit reports."""
+    target = text if normalized is None else normalized
+    found: list[Location] = []
+    cursor = 0
+    while needle and len(found) < 11:
+        index = target.find(needle, cursor)
+        if index < 0:
+            break
+        if positions is None:
+            start, end = index, index + len(needle)
+        else:
+            start, end = positions[index][0], positions[index + len(needle) - 1][1]
+        if positions is None or normalize(text[start:end])[0] == needle:
+            found.append(locate(start, end, paragraphs))
+        cursor = index + 1
+    return found
+
+
 def check_quote(
     quote: str,
     text: str,
@@ -82,14 +108,7 @@ def check_quote(
     normalized: str,
     positions: list[tuple[int, int]],
 ) -> QuoteResult:
-    found: list[Location] = []
-    cursor = 0
-    while len(found) < 11:
-        index = text.find(quote, cursor)
-        if index < 0:
-            break
-        found.append(locate(index, index + len(quote), paragraphs))
-        cursor = index + 1
+    found = find_locations(quote, text, paragraphs)
     if found:
         return QuoteResult(
             quote=quote,
@@ -103,15 +122,7 @@ def check_quote(
             ),
         )
     needle, _ = normalize(quote)
-    cursor = 0
-    while needle and len(found) < 11:
-        index = normalized.find(needle, cursor)
-        if index < 0:
-            break
-        start, end = positions[index][0], positions[index + len(needle) - 1][1]
-        if normalize(text[start:end])[0] == needle:
-            found.append(locate(start, end, paragraphs))
-        cursor = index + 1
+    found = find_locations(needle, text, paragraphs, normalized=normalized, positions=positions)
     if found:
         location = found[0]
         original = text[location.start : location.end]

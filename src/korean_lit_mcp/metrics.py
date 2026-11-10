@@ -21,6 +21,7 @@ class ToolMetrics(Middleware):
         if name not in {
             "search_works",
             "get_passage",
+            "find_passage",
             "verify_quote",
             "search_classical_text",
             "lookup_grammar",
