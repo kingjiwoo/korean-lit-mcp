@@ -17,6 +17,7 @@ Claude의 원격 MCP 커넥터에 URL을 등록합니다. 사용자 회원가입
 | `search_works` | 기본 문학 작품·검수 판본 탐색, 명시적인 일반 서지 검색 | 내장 작품은 총 7작품 8판본. 김유정 두 작품과 사미인곡·청산별곡·정철 관동별곡·규원가·홍길동전 두 판본. NL_API_KEY 설정 시에만 외부 서지 검색 사용. 고문헌은 nl_category=old_books로 한정 가능. 서지는 원문 제공을 보장하지 않음 |
 | `find_passage` | 선택한 판본에서 구절·앞뒤 원문 검색 | 기본 정확 검색, 표기 차이 검색은 명시. 위치·판본 해시 반환, 의미 검색은 미지원 |
 | `get_passage` | 검수 판본의 원문·행 주소·판본 ID·해시 조회 | 내장 7작품 8판본 제공. TXT 물리 행은 교과서 문단과 다를 수 있음 |
+| `review_material` | 지문·선지·해설의 명시한 인용 대조 보고서 | 실제 블록에서 인용을 추출하고 미검증 범위를 표시. 문항 정답·전체 지문 인증은 미지원 |
 | `verify_excerpt` | 지정한 원문 범위와 가공 인용·생략 대조 | 명시한 각주 표지·공백 규칙만 적용. edited_match는 원문 그대로의 일치가 아님 |
 | `verify_quote` | 개별 인용이나 지원 형식의 초안을 원문과 대조 | 조회한 판본·해시 또는 사용자가 제공한 본문 기준. 문학 해석·문법·문제 정답은 판정하지 않음 |
 | `search_classical_text` | 고전원문·한국문집총간·한국고전총간의 본문/기사명 검색 | ITKC 검색 발췌·링크 제공. 모든 고전시가·고전소설의 전문을 제공하는 도구가 아님 |
@@ -126,3 +127,5 @@ TEST_MCP_URL=https://korean-lit-mcp.vercel.app/mcp uv run pytest tests/test_http
 구절 검색은 `find_passage`에 `work_id`, `edition_id`, `query`를 전달합니다. `match_mode=orthography`는 NFC·공백·따옴표 차이 후보로 정확 일치와 구분합니다. 좌표는 0부터 시작하고 끝을 제외하며, 문맥은 코드포인트 단위입니다. 기본 앞뒤 80자·3후보, 600자 초과 후보 생략은 `omitted_oversized_matches`에 표시합니다. `has_more`는 더 많은 후보가 있음을 뜻하며 검색은 앞 11개 위치까지 확인합니다. [교사 작업 기능 계획](docs/TEACHER-WORKFLOW-PLAN.md)을 참고하세요.
 
 가공 인용은 `verify_excerpt`에서 기준 판본·해시(또는 `source_text`), 오름차순의 `segments: [{start, end, quote}]`, 선택 `rules`를 명시합니다. 원문 좌표는 코드포인트 기준·끝 제외입니다. `drop_note_markers: ["[5]"]`, `ignore_whitespace: true`는 기본 꺼짐이며 명시한 삭제 이력·좌표를 반환합니다. 표지가 실제 각주인지·생략이 적절한지는 판정하지 않습니다. `exact`와 `edited_match`는 별개이며 후자는 검토가 필요합니다. 기존 `verify_quote`의 엄격 판정은 유지합니다.
+
+지문·선지·해설 보고서는 `review_material`에 같은 기준 본문과 `blocks`를 전달합니다. 각 citation의 `start/end`는 블록 문자열 범위, `source_start/source_end`는 원문 범위입니다. 서버가 실제 블록 문자열에서 인용을 추출하며 나머지는 `unverified_ranges`로 반환합니다. [입력 예시·판정·제한](docs/TEACHER-WORKFLOW-TOOLS.md)을 확인하세요. 새 세 도구는 외부 API·LLM 없이 요청 중에만 처리하며 원문·초안을 저장하지 않습니다.

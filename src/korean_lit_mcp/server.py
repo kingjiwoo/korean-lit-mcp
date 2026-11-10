@@ -15,6 +15,7 @@ from korean_lit_mcp.contracts import (
 from korean_lit_mcp.discovery import discover_work, summarize_bibliography
 from korean_lit_mcp.excerpts import ExcerptRequest, ExcerptResult, verify_excerpt
 from korean_lit_mcp.grammar import GrammarEntry, GrammarRequest, lookup_grammar
+from korean_lit_mcp.materials import MaterialRequest, MaterialResult, review_material
 from korean_lit_mcp.metrics import ToolMetrics
 from korean_lit_mcp.passage_search import FindPassageRequest, PassageSearchResult, find_passage
 from korean_lit_mcp.passages import get_passage, search_works
@@ -52,6 +53,8 @@ def create_server(
             "모델 기억이나 추정으로 누락된 옛한글·원문을 복원하지 마세요. "
             "자료 작성은 클라이언트에서 하고, 모든 지문·해설 인용을 제출해 대조한 후 "
             "수정한 인용을 재검증하세요. "
+            "가공 발췌는 verify_excerpt로 규칙과 원문 좌표를 명시해 대조하세요. "
+            "지문·선지·해설 보고서는 review_material의 명시적 인용 영역을 사용하세요. "
             "제공 본문과의 일치는 정본 인증이나 문항 정답 검증이 아닙니다. "
             "문법 개념은 lookup_grammar에 시대를 명시해 조회하고 출처·예시 종류·한계를 확인하세요. "
             "개념 조회를 임의 문장 분석이나 문항 정답 검증으로 표시하지 마세요."
@@ -181,6 +184,18 @@ def create_server(
         원본은 보존하며 구간 사이 생략·삭제·비교 좌표를 반환합니다. 문항 정답은 판정하지 않습니다.
         """
         return verify_excerpt(request, editions)
+
+    @server.tool(name="review_material", annotations={"readOnlyHint": True})
+    def material(request: MaterialRequest) -> MaterialResult:
+        """지문·선지·해설 블록의 명시한 인용을 대조해 구조화된 보고서를 반환합니다.
+
+        기준은 work_id·edition_id·source_hash 또는 source_text입니다. block의 text 안
+        citations start/end는 0부터 시작·끝 제외, source_start/source_end는 원문 좌표입니다.
+        인용은 서버가 실제 블록에서 추출합니다. rules는 verify_excerpt와 같으며 기본 꺼짐입니다.
+        unverified_ranges는 빠짐없이 미검증으로 남기며 all_submitted_raw_exact는 지정 인용만의
+        일치입니다. 초안 전체·인용 연결 순서·문학 해석·정답을 인증하지 않습니다.
+        """
+        return review_material(request, editions)
 
     @server.tool(name="verify_quote", annotations={"readOnlyHint": True})
     def verify(request: VerifyRequest) -> VerificationResult:
