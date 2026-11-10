@@ -13,6 +13,7 @@ from korean_lit_mcp.contracts import (
     VerifyRequest,
 )
 from korean_lit_mcp.discovery import discover_work, summarize_bibliography
+from korean_lit_mcp.excerpts import ExcerptRequest, ExcerptResult, verify_excerpt
 from korean_lit_mcp.grammar import GrammarEntry, GrammarRequest, lookup_grammar
 from korean_lit_mcp.metrics import ToolMetrics
 from korean_lit_mcp.passage_search import FindPassageRequest, PassageSearchResult, find_passage
@@ -169,6 +170,17 @@ def create_server(
         원문을 변형 없이 반환합니다. 문단·행 주소는 1부터 시작하고 끝을 포함합니다.
         """
         return get_passage(request, editions)
+
+    @server.tool(name="verify_excerpt", annotations={"readOnlyHint": True})
+    def excerpt(request: ExcerptRequest) -> ExcerptResult:
+        """원문 범위를 명시한 가공 인용·생략 구간을 대조합니다. LLM·외부 API 없이 처리합니다.
+
+        기준은 work_id·edition_id·source_hash 또는 source_text입니다. segments는 원문 0-based
+        start/end(끝 제외)·quote이며 오름차순입니다. rules 기본 끔, 각주 표지는 제거할 [숫자]를
+        명시하세요. edited_match는 편집 규칙 일치이며 원문 exact가 아니고 검토가 필요합니다.
+        원본은 보존하며 구간 사이 생략·삭제·비교 좌표를 반환합니다. 문항 정답은 판정하지 않습니다.
+        """
+        return verify_excerpt(request, editions)
 
     @server.tool(name="verify_quote", annotations={"readOnlyHint": True})
     def verify(request: VerifyRequest) -> VerificationResult:

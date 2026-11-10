@@ -39,6 +39,7 @@ async def test_live_http_workflow() -> None:
             "get_passage",
             "find_passage",
             "verify_quote",
+            "verify_excerpt",
             "lookup_grammar",
         }
         result = await client.call_tool(
