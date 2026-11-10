@@ -103,4 +103,4 @@ R-06은 여섯 기준 작품의 실제 HTTP/MCP 검색 예산, 제공 원문 범
 
 ## 교사 작업 흐름 W-01~03 (2026-11-10)
 
-find_passage(PR #54), verify_excerpt(PR #55)를 develop에 통합하고 review_material을 후속 PR로 검증한다. 도구는 모두 코드 기반·읽기 전용이며 원문은 변경하지 않는다. 구절 검색 → 편집 규칙 대조 → 블록별 인용/미검증 보고서를 제공하며 기존 verify_quote의 엄격 판정·교사 본문 비보관은 유지한다. 이 구현은 develop 기준이고 production 반영은 별도 릴리스다. [계획](TEACHER-WORKFLOW-PLAN.md)·[입력 예시](TEACHER-WORKFLOW-TOOLS.md)를 따른다.
+find_passage(PR #54), verify_excerpt(PR #55)를 develop에 통합하고 review_material은 PR #56에서 구현·검증했다. 도구는 모두 코드 기반·읽기 전용이며 원문은 변경하지 않는다. 구절 검색 → 편집 규칙 대조 → 블록별 인용/미검증 보고서를 제공하며 기존 verify_quote의 엄격 판정·교사 본문 비보관은 유지한다. 이 구현은 develop 기준이고 production 반영은 별도 릴리스다. [계획](TEACHER-WORKFLOW-PLAN.md)·[입력 예시](TEACHER-WORKFLOW-TOOLS.md)를 따른다.

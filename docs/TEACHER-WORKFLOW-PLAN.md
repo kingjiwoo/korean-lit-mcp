@@ -34,4 +34,4 @@ W-02 엔진을 재사용해 블록별 결과, 검토 필요 건수, 실제 대�
 
 - W-01: [PR #54](https://github.com/kingjiwoo/korean-lit-mcp/pull/54) develop 병합, 207개 테스트·필수 검사·Opus 독립 리뷰 완료.
 - W-02: [PR #55](https://github.com/kingjiwoo/korean-lit-mcp/pull/55) develop 병합, 219개 테스트·필수 검사·Opus 1차/후속 독립 리뷰 완료. raw exact와 편집으로 빈 문자열이 된 비교를 구분하고 오류 안내·상세 잘림을 보완했다.
-- W-03: 구조화된 블록 입력·미검증 영역 보고와 HTTP/MCP 연결 흐름을 구현·검증한다. 각 citation은 독립 대조이므로 연결한 발췌의 순서는 verify_excerpt로 별도 확인한다. 원문 데이터·production은 이 작업에서 변경하지 않는다.
+- W-03: [PR #56](https://github.com/kingjiwoo/korean-lit-mcp/pull/56)에서 구조화된 블록 입력·미검증 영역 보고와 HTTP/MCP 연결 흐름을 구현·검증했다. 각 citation은 독립 대조이므로 연결한 발췌의 순서는 verify_excerpt로 별도 확인한다. 원문 데이터·production은 이 작업에서 변경하지 않는다.
