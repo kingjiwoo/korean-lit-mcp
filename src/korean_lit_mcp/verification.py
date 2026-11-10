@@ -9,7 +9,8 @@ from pydantic import BaseModel, Field, ValidationError
 
 from korean_lit_mcp.contracts import Copyright, Envelope, ErrorInfo, Source, VerifyRequest
 from korean_lit_mcp.drafts import ExtractedQuote, extract_quotes
-from korean_lit_mcp.sources import Edition, Paragraph, SourceError, select_edition, split_paragraphs
+from korean_lit_mcp.references import resolve_reference
+from korean_lit_mcp.sources import Edition, Paragraph, SourceError
 
 QUOTE_MARKS = str.maketrans({"“": '"', "”": '"', "‘": "'", "’": "'"})
 
@@ -172,33 +173,27 @@ def verify_quote(request: VerifyRequest, editions: tuple[Edition, ...] = ()) -> 
     limits = " 문학 해석·문항 정답·미제출 인용은 검증하지 않습니다."
     if reference_basis == "supplied_text":
         limits += " 제공 문자열과의 대조이며 정본·출처·다른 판본의 동일성을 인증하지 않습니다."
-    source = Source(name="교사 제공 텍스트")
+    source = Source(
+        name="교사 제공 텍스트" if request.source_text is not None else "검수 원문 목록"
+    )
     rights: Copyright = "unknown"
-    text = request.source_text
-    if text is None:
-        source = Source(name="검수 원문 목록")
-        try:
-            edition = select_edition(
-                editions, work_id=request.work_id, edition_id=request.edition_id
+    try:
+        reference = resolve_reference(request, editions)
+        source, rights = reference.source, reference.copyright
+        if request.source_hash is not None and reference.source_hash != request.source_hash:
+            raise SourceError(
+                "source_changed", "원문 해시가 다릅니다. get_passage로 다시 조회하세요."
             )
-            source, rights = edition.manifest.source, edition.manifest.copyright
-            if edition.manifest.sha256 != request.source_hash:
-                raise SourceError(
-                    "source_changed", "원문 해시가 다릅니다. get_passage로 다시 조회하세요."
-                )
-        except SourceError as error:
-            return VerificationResult(
-                source=source,
-                copyright=rights,
-                coverage=coverage,
-                reference_basis=reference_basis,
-                error=ErrorInfo(code=error.code, message=str(error)),
-                note=str(error) + limits,
-            )
-        text = edition.text
-        paragraphs = edition.paragraphs
-    else:
-        paragraphs = split_paragraphs(text)
+    except SourceError as error:
+        return VerificationResult(
+            source=source,
+            copyright=rights,
+            coverage=coverage,
+            reference_basis=reference_basis,
+            error=ErrorInfo(code=error.code, message=str(error)),
+            note=str(error) + limits,
+        )
+    text, paragraphs = reference.text, reference.paragraphs
     extracted: list[ExtractedQuote] = []
     warnings: list[str] = []
     if request.draft is not None:

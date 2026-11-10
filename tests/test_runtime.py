@@ -34,6 +34,7 @@ def test_public_tools_do_not_require_login() -> None:
             "get_passage",
             "find_passage",
             "verify_quote",
+            "verify_excerpt",
             "lookup_grammar",
         }
         assert response.headers["cache-control"] == "no-store"

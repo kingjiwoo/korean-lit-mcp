@@ -81,18 +81,14 @@ class PassageRequest(Input):
         return self
 
 
-class VerifyRequest(Input):
-    quotes: Annotated[list[Quote], Field(min_length=1, max_length=20)] | None = None
-    draft: Annotated[Text, Field(max_length=30000)] | None = None
+class TextReference(Input):
     work_id: Identifier | None = None
     edition_id: Identifier | None = None
     source_hash: Digest | None = None
     source_text: Annotated[Text, Field(max_length=50000)] | None = None
 
     @model_validator(mode="after")
-    def validate_modes(self) -> Self:
-        if (self.quotes is None) == (self.draft is None):
-            raise ValueError("Provide exactly one of quotes or draft.")
+    def validate_reference(self) -> Self:
         if (self.work_id is None) == (self.source_text is None):
             raise ValueError("Provide exactly one of work_id or source_text.")
         if self.work_id is not None:
@@ -100,6 +96,17 @@ class VerifyRequest(Input):
                 raise ValueError("work_id requires edition_id and source_hash from get_passage.")
         elif self.edition_id is not None or self.source_hash is not None:
             raise ValueError("User-provided text does not accept a stored edition or hash.")
+        return self
+
+
+class VerifyRequest(TextReference):
+    quotes: Annotated[list[Quote], Field(min_length=1, max_length=20)] | None = None
+    draft: Annotated[Text, Field(max_length=30000)] | None = None
+
+    @model_validator(mode="after")
+    def validate_modes(self) -> Self:
+        if (self.quotes is None) == (self.draft is None):
+            raise ValueError("Provide exactly one of quotes or draft.")
         return self
 
 
